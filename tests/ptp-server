@@ -1,0 +1,14 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=319 CLKNETSIM_FUZZ_START=5.1
+
+run_test chronyd -d -d \
+	'allow' \
+	'keyfile data/chrony.keys' \
+	'local stratum 5 orphan' \
+	'ntpsigndsocket /clknetsim/unix/signd.socket' \
+	'ptpport 319' \
+	'server 192.168.123.4' \
+	'server 192.168.123.5'

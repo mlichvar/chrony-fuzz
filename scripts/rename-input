@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+for i in input/*; do
+	echo "$i"
+	index=0
+	for f in "$i"/*; do
+		while true; do
+			index=$((index + 1))
+			out=$(printf "%s/%05d" "$i" "$index")
+			[ "$f" = "$out" ] && continue 2
+			[ -f "$out" ] || break
+		done
+		mv -v "$f" "$out"
+	done
+done

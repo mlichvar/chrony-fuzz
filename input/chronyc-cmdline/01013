@@ -1,0 +1,1 @@
+add peer 127.1. presend 1prefer iburst prefer maxdelay 2.0 maxdelayratio 3.0 presend 1 key 1 iburst prefer noselect

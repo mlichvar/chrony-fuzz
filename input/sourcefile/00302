@@ -1,0 +1,15 @@
+erver ::1
+server node1.net1.clk iburst
+pee2.16tp6.example.com maxdelay 2 kburst presend 2 xleave offset 1ool 3 2
+pool nQm presend 2
+p8.123 2
+pool ntm presend 2
+pool ntp4@example.com offline polltarget 4
+sNrver ntp5.example.cWm maxdelay²2 offline
+server ntp6.examp_e.com maxdelay 2 iburst presend 2 xleave offset 1ool 3 2
+pool nQm presend 2
+pool ntpntm presend 2
+poo.168.923 2
+pool ntp.2
+server ::1
+sa

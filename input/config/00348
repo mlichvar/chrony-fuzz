@@ -1,0 +1,6 @@
+server Cnt
+%ai
+rtcfile /nt
+%ai
+rtcfile /chrony/drift
+fallbackdrip d

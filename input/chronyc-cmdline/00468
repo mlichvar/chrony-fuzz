@@ -1,0 +1,1 @@
+add peer 127 iburst  minpoll 3 maxpoll 33 maxdelay 2.0 maxdelayratio 3.0 presend 1 key 1 iburst prefer noselect

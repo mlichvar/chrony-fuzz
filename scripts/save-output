@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+WORK_DIR=${WORK_DIR:-work}
+
+for i in input/*; do
+	queue=$WORK_DIR/output/$(basename "$i")/default/queue
+	[ -d "$queue" ] || continue
+	echo "$queue"
+
+	sums1=$(find "$queue" -maxdepth 1 -type f -print0 | xargs -0 md5sum | sort)
+	sums2=$(find "$i" -maxdepth 1 -type f -print0 | xargs -0 md5sum | sort)
+
+	index=0
+	comm -2 -3 <(echo "$sums1" | cut -d ' ' -f 1) <(echo "$sums2" | cut -d ' ' -f 1) | \
+		join -j 1 - <(echo "$sums1") | \
+		while read -r _ in; do
+			while true; do
+				index=$((index + 1))
+				out=$(printf "%s/%05d" "$i" "$index")
+				[ -f "$out" ] || break
+			done
+
+			cp -v "$in" "$out"
+		done
+done

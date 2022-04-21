@@ -1,0 +1,23 @@
+#Com
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+%Cot
+
+allow
+allow 1.1.1.1/24
+allow 150.140.130
+allow 2.2.2.2/21
+allow 255
+allow all
+allow all 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 ±23

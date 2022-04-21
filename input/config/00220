@@ -1,0 +1,50 @@
+#èm
+! Cnt
+!
+local distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+!
+!en
+!enal
+local distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+! Cnt
+!han
+local stratum 10
+local distance 1.0
+! Cnt
+!ewal
+locAl distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%ai
+rtcsync
+server ntle.com
+server ntp2.example.comorphan
+local stratum 10
+local distance 1.0
+! Cnt
+!
+locAl distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%aÿync
+server ntle.com
+server ntp2.example.com iburst
+server ntp3.examp

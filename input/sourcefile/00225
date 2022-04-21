@@ -1,0 +1,11 @@
+%Com
+ser123.2
+server ::1
+server node1.net1.clk iburst
+peer ntp3.com presend 2
+pool ntp4.example.com offline polltarget 4
+server ntp5.exa maxdelay 2 offline
+server ntp6.com maxdelay 2 iburst presend 2 xleave offset 1e-4
+server ntp7.eom iburst presend 2 offline prefer trust require
+server ntp8.example.com filter 4 asymmetry 0.4 burnd 2
+pool ntp4.exampexample.com minsamples 8 maxsamples 16 version 3

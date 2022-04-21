@@ -1,0 +1,22 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=323 CLKNETSIM_FUZZ_START=0.05
+
+run_test chronyc -h 192.168.123.2 -d -n -m \
+	'rekey' \
+	'activity' \
+	'authdata -v' \
+	'clients' \
+	'manual list' \
+	'ntpdata 192.168.123.2' \
+	'rtcdata' \
+	'selectdata -v' \
+	'serverstats' \
+	'settime Sep 25, 2015 16:30:05' \
+	'smoothing' \
+	'sourcename 192.168.123.2' \
+	'sources -v' \
+	'sourcestats -v' \
+	'tracking'

@@ -1,0 +1,68 @@
+From ae45a8b001b54f68b787d455f4aae204e444b01e Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:49:59 +0200
+Subject: [PATCH 07/19] search and open files only in data directory
+
+---
+ conf.c | 13 +++++++++++++
+ util.c |  6 ++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/conf.c b/conf.c
+index 199b63c8..69fdacaa 100644
+--- a/conf.c
++++ b/conf.c
+@@ -1522,6 +1522,14 @@ compare_basenames(const void *a, const void *b)
+ 
+ /* ================================================== */
+ 
++static int
++is_path_acceptable(char *path)
++{
++  return strncmp(path, "data/", 5) == 0 && !strstr(path, "..");
++}
++
++/* ================================================== */
++
+ static int
+ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *path))
+ {
+@@ -1537,6 +1545,8 @@ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *pat
+   for (i = 0; i < n_dirs; i++) {
+     if (snprintf(buf, sizeof (buf), "%s/*%s", dirs[i], suffix) >= sizeof (buf))
+       assert(0);
++    if (!is_path_acceptable(buf))
++      return 1;
+     if (glob(buf, GLOB_NOSORT | (i > 0 ? GLOB_APPEND : 0), NULL, &gl) != 0)
+       ;
+   }
+@@ -1593,6 +1603,9 @@ parse_include(char *line)
+ 
+   check_number_of_args(line, 1);
+ 
++  if (!is_path_acceptable(line))
++    return;
++
+   if ((r = glob(line,
+ #ifdef GLOB_NOMAGIC
+                 GLOB_NOMAGIC |
+diff --git a/util.c b/util.c
+index 8681a32c..22c058c6 100644
+--- a/util.c
++++ b/util.c
+@@ -1269,6 +1269,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+   if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
+     return NULL;
+ 
++  if (!(strncmp(path, "data/", 5) == 0 && !strstr(path, "..")) &&
++      strcmp(path, "/dev/urandom") != 0) {
++    LOG(severity, "Refused to open %s", path);
++    return NULL;
++  }
++
+   env = getenv("TEST_STDIN_FILE");
+   if (env && strcmp(env, path) == 0) {
+     DEBUG_LOG("Opened %s as stdin", path);
+-- 
+2.35.1
+

@@ -1,0 +1,5 @@
+server Cnt
+%ai
+rtcsync
+server ntom minsamples 4 minpoll 
+ser

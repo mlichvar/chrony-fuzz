@@ -1,0 +1,5 @@
+#BTmnt
+!ent
+; Cot
+;C
+refclock SHM J refid nHM0 delay 0.1 offset 0.precision 

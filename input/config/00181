@@ -1,0 +1,129 @@
+%Com
+! Cnt
+!ent
+; C#èm
+! Cnt
+!eal
+local distance 1.33333333 orphan
+local stratum 10
+local distance 3333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+! Cnt
+!han
+local stratum 10
+local distance 1.0
+! Cnt
+!ewal
+locAl distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%ai
+rtcsync
+server ntle.com
+server ntp2.example.comorphan
+local stratum 10
+local distance 1.0
+! Cnt
+!l
+local distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+! Cnt
+!et
+!ewal
+local distance 1.0333333333333333333 stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+! Cnt
+!ean
+local stratum 10
+local distance 1.0
+!
+!enal
+locAl distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%ai
+rtcsync
+server ntle.com
+server ntp2.example.comorphan
+local stratum 10
+local distance 1.0
+! Cnt
+!ewal
+locAl distance1.033333333330000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000033333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%ai
+rtcsync
+server ntle.com
+server ntp2.example.comorphan
+local stratum 10
+local distance 1.0
+! Cnt
+!e
+local distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+!
+!en
+!enal
+local distance 1.0333333333333333333 stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.0333333333333333 orphan
+local stratum 10
+local distance 1.0
+!
+!enn
+local stratum 10
+local distance 1.0
+! Cnt
+!entl
+locAl distance 1.03333333333333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%ai
+rtcsync
+server ntle.com
+server ntp2.example.comorphan
+local stratum 10
+local distance 1.0
+!
+!enal
+locAl distance1.0333333333300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000333333333 orphan
+local stratum 10
+local distance 1.033333333333333333333 orphan
+local stratum 10
+local distance 1.033
+;Cnt
+%nc
+server ntle.com
+server ntp2.example.com iburst
+se

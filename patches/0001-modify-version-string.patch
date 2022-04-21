@@ -1,0 +1,25 @@
+From 4d63a9b3a87ef39945baea41cf6987ced7842cad Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Tue, 12 Apr 2022 15:26:01 +0200
+Subject: [PATCH 01/19] modify version string
+
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 8041d4e4..3bd6ba54 100755
+--- a/configure
++++ b/configure
+@@ -1088,7 +1088,7 @@ else
+   CHRONY_VERSION="DEVELOPMENT"
+ fi
+ 
+-add_def CHRONY_VERSION "\"${CHRONY_VERSION}\""
++add_def CHRONY_VERSION "\"FUZZ ${CHRONY_VERSION}\""
+ 
+ for f in Makefile doc/Makefile test/unit/Makefile
+ do
+-- 
+2.35.1
+

@@ -1,0 +1,16 @@
+#Comnt
+!ent
+; vet
+%ai
+rtcdevice eth0
+bindacqdevice ei
+rtcdevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+bindacqdevice eth0ai
+rtcdevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+broadcast 10 192.168.1.255
+.com 19255
+b

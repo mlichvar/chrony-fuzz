@@ -1,0 +1,10 @@
+%Com
+pool ntp4.example.com offline polltarget  
+server ntp5.%xample.com maxdelay 2 offXiarget 4
+server ntp5.examet 1e-4
+server ntp7.examplecom iburst presend 2 offline prefer trust rmemmmmmmsmmmmímmC%Comment
+server 19e.com offline polltarget  
+se node1et1.clk ibursˆ
+peer ntp3.example.com presend 2
+pool ntp4.example.com offline polltarget  
+s

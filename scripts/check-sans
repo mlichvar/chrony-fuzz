@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+for build_opts in \
+	"gcc-fast asan" "clang-fast asan" "clang-fast msan"
+do
+	for extra_conf_opts in \
+		"" \
+		"--disable-nts" \
+		"--disable-ntp" \
+		"--disable-ipv6"
+	do
+		scripts/build $build_opts $extra_conf_opts
+
+		if ! scripts/check; then
+			echo "CHECK-SANS failed with $build_opts $extra_conf_opts"
+			exit 1
+		fi
+	done
+done

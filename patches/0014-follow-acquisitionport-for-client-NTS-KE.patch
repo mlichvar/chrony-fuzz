@@ -1,0 +1,25 @@
+From 8d6b2a12d52f43d26ffbbfdfa045b9dcfde50cba Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:52:33 +0200
+Subject: [PATCH 14/19] follow acquisitionport for client NTS-KE
+
+---
+ nts_ke_client.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/nts_ke_client.c b/nts_ke_client.c
+index c22b0eb1..0e9ee535 100644
+--- a/nts_ke_client.c
++++ b/nts_ke_client.c
+@@ -372,7 +372,7 @@ NKC_Start(NKC_Instance inst)
+ 
+   /* Follow the bindacqaddress and bindacqdevice settings */
+   CNF_GetBindAcquisitionAddress(inst->address.ip_addr.family, &local_addr.ip_addr);
+-  local_addr.port = 0;
++  local_addr.port = MAX(CNF_GetAcquisitionPort(), 0);
+   iface = CNF_GetBindAcquisitionInterface();
+ 
+   /* Make a label containing both the address and name of the server */
+-- 
+2.35.1
+

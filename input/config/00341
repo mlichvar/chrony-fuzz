@@ -1,0 +1,7 @@
+#Comdt
+!ent
+; Cot
+refclock r ntpm maxsamples 8 maxsamples 16
+; Cot
+refclock r ntpm maxsamples 8 maxsamples 1 ver 3
+s

@@ -1,0 +1,285 @@
+From 584d458efd8ddc177343010641f2f7766c331581 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:52:06 +0200
+Subject: [PATCH 13/19] bypass SIV and TLS
+
+---
+ configure        |  2 +-
+ nts_ke_server.c  |  4 +++-
+ nts_ke_session.c | 45 ++++++++++++++++++++++++++++++++++++++++++++-
+ nts_ntp_client.c |  1 +
+ nts_ntp_server.c |  1 +
+ siv_nettle.c     | 12 ++++++++++++
+ 6 files changed, 62 insertions(+), 3 deletions(-)
+
+diff --git a/configure b/configure
+index 3bd6ba54..15ac1e40 100755
+--- a/configure
++++ b/configure
+@@ -982,7 +982,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
+       add_def HAVE_SIV
+       add_def HAVE_NETTLE_SIV_CMAC
+     else
+-      if test_code 'SIV in gnutls' 'gnutls/crypto.h' \
++      if false && test_code 'SIV in gnutls' 'gnutls/crypto.h' \
+         "$test_cflags" "$test_link $LIBS" '
+           return gnutls_aead_cipher_init(NULL, GNUTLS_CIPHER_AES_128_SIV, NULL);'
+       then
+diff --git a/nts_ke_server.c b/nts_ke_server.c
+index ece1b4c0..aa0129ee 100644
+--- a/nts_ke_server.c
++++ b/nts_ke_server.c
+@@ -490,6 +490,7 @@ generate_key(int index)
+   /* Encode the index in the lowest bits of the ID */
+   server_keys[index].id &= -1U << KEY_ID_INDEX_BITS;
+   server_keys[index].id |= index;
++  server_keys[index].id &= ~1U;
+ 
+   DEBUG_LOG("Generated server key %"PRIX32, server_keys[index].id);
+ 
+@@ -880,6 +881,7 @@ NKS_GenerateCookie(NKE_Context *context, NKE_Cookie *cookie)
+ 
+   header->key_id = htonl(key->id);
+   UTI_GetRandomBytes(header->nonce, sizeof (header->nonce));
++  header->nonce[0] &= ~1;
+ 
+   plaintext_length = context->c2s.length + context->s2c.length;
+   assert(plaintext_length <= sizeof (plaintext));
+@@ -929,7 +931,7 @@ NKS_DecodeCookie(NKE_Cookie *cookie, NKE_Context *context)
+ 
+   key_id = ntohl(header->key_id);
+   key = &server_keys[key_id % MAX_SERVER_KEYS];
+-  if (key_id != key->id) {
++  if (key_id & 1) {
+     DEBUG_LOG("Unknown key %"PRIX32, key_id);
+     return 0;
+   }
+diff --git a/nts_ke_session.c b/nts_ke_session.c
+index 96b08c14..bc0cef48 100644
+--- a/nts_ke_session.c
++++ b/nts_ke_session.c
+@@ -217,6 +217,10 @@ create_tls_session(int server_mode, int sock_fd, const char *server_name,
+   unsigned int flags;
+   int r;
+ 
++  int *x = malloc(sizeof *x);
++  *x = sock_fd;
++  return (gnutls_session_t)x;
++
+   r = gnutls_init(&session, GNUTLS_NONBLOCK | GNUTLS_NO_TICKETS |
+                   (server_mode ? GNUTLS_SERVER : GNUTLS_CLIENT));
+   if (r < 0) {
+@@ -286,7 +290,9 @@ stop_session(NKSN_Instance inst)
+   Free(inst->label);
+   inst->label = NULL;
+ 
++#if 0
+   gnutls_deinit(inst->tls_session);
++#endif
+   inst->tls_session = NULL;
+ 
+   SCH_RemoveTimeout(inst->timeout_id);
+@@ -313,6 +319,8 @@ check_alpn(NKSN_Instance inst)
+ {
+   gnutls_datum_t alpn;
+ 
++  return 1;
++
+   if (gnutls_alpn_get_selected_protocol(inst->tls_session, &alpn) < 0 ||
+       alpn.size != sizeof (NKE_ALPN_NAME) - 1 ||
+       memcmp(alpn.data, NKE_ALPN_NAME, sizeof (NKE_ALPN_NAME) - 1) != 0)
+@@ -390,7 +398,11 @@ handle_event(NKSN_Instance inst, int event)
+       return 0;
+ 
+     case KE_HANDSHAKE:
++#if 0
+       r = gnutls_handshake(inst->tls_session);
++#else
++      r = 0;
++#endif
+ 
+       if (r < 0) {
+         if (gnutls_error_is_fatal(r)) {
+@@ -427,7 +439,7 @@ handle_event(NKSN_Instance inst, int event)
+ 
+       inst->retry_factor = NKE_RETRY_FACTOR2_TLS;
+ 
+-      if (DEBUG) {
++      if (0 && DEBUG) {
+         char *description = gnutls_session_get_desc(inst->tls_session);
+         DEBUG_LOG("Handshake with %s completed %s",
+                   inst->label, description ? description : "");
+@@ -448,8 +460,13 @@ handle_event(NKSN_Instance inst, int event)
+       assert(inst->new_message && message->complete);
+       assert(message->length <= sizeof (message->data) && message->length > message->sent);
+ 
++#if 0
+       r = gnutls_record_send(inst->tls_session, &message->data[message->sent],
+                              message->length - message->sent);
++#else
++      r = send(*(int *)(inst->tls_session), &message->data[message->sent],
++                             message->length - message->sent, 0);
++#endif
+ 
+       if (r < 0) {
+         if (gnutls_error_is_fatal(r)) {
+@@ -480,8 +497,13 @@ handle_event(NKSN_Instance inst, int event)
+           return 0;
+         }
+ 
++#if 0
+         r = gnutls_record_recv(inst->tls_session, &message->data[message->length],
+                                sizeof (message->data) - message->length);
++#else
++        r = recv(*(int *)(inst->tls_session), &message->data[message->length],
++                               sizeof (message->data) - message->length, 0);
++#endif
+ 
+         if (r < 0) {
+           /* Handle a renegotiation request on both client and server as
+@@ -499,7 +521,11 @@ handle_event(NKSN_Instance inst, int event)
+ 
+         message->length += r;
+ 
++#if 0
+       } while (gnutls_record_check_pending(inst->tls_session) > 0);
++#else
++      } while (0);
++#endif
+ 
+       if (!check_message_format(message, r == 0)) {
+         LOG(inst->server ? LOGS_DEBUG : LOGS_ERR,
+@@ -519,7 +545,11 @@ handle_event(NKSN_Instance inst, int event)
+       return 1;
+ 
+     case KE_SHUTDOWN:
++#if 0
+       r = gnutls_bye(inst->tls_session, GNUTLS_SHUT_RDWR);
++#else
++      r = 0;
++#endif
+ 
+       if (r < 0) {
+         if (gnutls_error_is_fatal(r)) {
+@@ -598,6 +628,7 @@ static void
+ init_gnutls(void)
+ {
+   int r;
++  assert(0);
+ 
+   if (gnutls_initialised)
+     return;
+@@ -628,6 +659,7 @@ init_gnutls(void)
+ static void
+ deinit_gnutls(void)
+ {
++  assert(0);
+   if (!gnutls_initialised || credentials_counter > 0)
+     return;
+ 
+@@ -649,6 +681,8 @@ create_credentials(const char **certs, const char **keys, int n_certs_keys,
+   gnutls_certificate_credentials_t credentials = NULL;
+   int i, r;
+ 
++  return malloc(1);
++
+   init_gnutls();
+ 
+   r = gnutls_certificate_allocate_credentials(&credentials);
+@@ -730,9 +764,13 @@ NKSN_CreateClientCertCredentials(const char **certs, uint32_t *ids,
+ void
+ NKSN_DestroyCertCredentials(NKSN_Credentials credentials)
+ {
++#if 0
+   gnutls_certificate_free_credentials((gnutls_certificate_credentials_t)credentials);
+   credentials_counter--;
+   deinit_gnutls();
++#else
++  Free(credentials);
++#endif
+ }
+ 
+ /* ================================================== */
+@@ -877,6 +915,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
+     return 0;
+   }
+ 
++#if 0
+   if (gnutls_prf_rfc5705(inst->tls_session,
+                          sizeof (NKE_EXPORTER_LABEL) - 1, NKE_EXPORTER_LABEL,
+                          sizeof (NKE_EXPORTER_CONTEXT_C2S) - 1, NKE_EXPORTER_CONTEXT_C2S,
+@@ -888,6 +927,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
+     DEBUG_LOG("Could not export key");
+     return 0;
+   }
++#else
++  memset(c2s->key, 0, length);
++  memset(s2c->key, 0, length);
++#endif
+ 
+   c2s->length = length;
+   s2c->length = length;
+diff --git a/nts_ntp_client.c b/nts_ntp_client.c
+index 0f812be8..49ca642a 100644
+--- a/nts_ntp_client.c
++++ b/nts_ntp_client.c
+@@ -295,6 +295,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
+   UTI_GetRandomBytes(inst->uniq_id, sizeof (inst->uniq_id));
+   inst->uniq_id[0] &= ~1;
+   UTI_GetRandomBytes(inst->nonce, sizeof (inst->nonce));
++  inst->nonce[0] &= ~1;
+ 
+   /* Get new cookies if there are not any, or they are no longer usable */
+   if (!check_cookies(inst)) {
+diff --git a/nts_ntp_server.c b/nts_ntp_server.c
+index 9226c895..0ca80b6b 100644
+--- a/nts_ntp_server.c
++++ b/nts_ntp_server.c
+@@ -208,6 +208,7 @@ NNS_CheckRequestAuth(NTP_Packet *packet, NTP_PacketInfo *info, uint32_t *kod)
+      there (when the TX timestamp is already set) */
+ 
+   UTI_GetRandomBytes(server->nonce, sizeof (server->nonce));
++  server->nonce[0] &= ~1;
+ 
+   assert(sizeof (server->cookies) / sizeof (server->cookies[0]) == NTS_MAX_COOKIES);
+   for (i = 0; i < NTS_MAX_COOKIES && i < requested_cookies; i++)
+diff --git a/siv_nettle.c b/siv_nettle.c
+index d8f8b23e..c7616329 100644
+--- a/siv_nettle.c
++++ b/siv_nettle.c
+@@ -122,9 +122,15 @@ SIV_Encrypt(SIV_Instance instance,
+ 
+   assert(assoc && plaintext);
+ 
++#if 0
+   siv_cmac_aes128_encrypt_message(&instance->siv, nonce_length, nonce,
+                                   assoc_length, assoc,
+                                   ciphertext_length, ciphertext, plaintext);
++#else
++  memcpy(ciphertext, plaintext, plaintext_length);
++  memset(ciphertext + plaintext_length, 0, ciphertext_length - plaintext_length);
++#endif
++
+   return 1;
+ }
+ 
+@@ -147,10 +153,16 @@ SIV_Decrypt(SIV_Instance instance,
+ 
+   assert(assoc && plaintext);
+ 
++#if 0
+   if (!siv_cmac_aes128_decrypt_message(&instance->siv, nonce_length, nonce,
+                                        assoc_length, assoc,
+                                        plaintext_length, plaintext, ciphertext))
+     return 0;
++#else
++  if (nonce[0] & 1)
++    return 0;
++  memcpy(plaintext, ciphertext, plaintext_length);
++#endif
+ 
+   return 1;
+ }
+-- 
+2.35.1
+

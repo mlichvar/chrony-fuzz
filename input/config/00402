@@ -1,0 +1,18 @@
+#Com
+! Cnt
+!t
+%ai
+rtcsync
+server ntxe.com
+server ntpe.com iburst
+server ntp3.example.com presend 2
+server ntp4.example.com offline polltarget 5
+server ntp5.example.com maxpoll  2 offline
+server ntp6.examp offline polltarget 5
+server ntp5.example.com maxpoll  2 offline
+server ntp6.example.cle.com maxdelay 2 iburst offline polltarget 5
+server ntp5.example.com maxpoll  2 offline
+server ntp6.example.cle.com maxdelay 2 iburst presend 2presend 2 xleave offset 1e-4
+server ntp7.example.com iburst maxpoll  2 offline
+server ntp6presend 2 offline r trust require
+se

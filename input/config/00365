@@ -1,0 +1,52 @@
+#Com
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+%Cot
+
+allow
+allow 1.1.1.1/24
+allow 150.140.130
+allow 2.2.2.2/21
+allow 255
+allow
+allow all 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindacqaddress 127.0.0.1
+bindacqaddress ::1
+bindaddress 127.0.0.1
+bindaddress ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+binddevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+clockprecision 1
+cmdallow all ff::/64
+cmdallow 192.168.1.0/24
+cmdallow ::1/24
+cmdallow ff::dd
+cmddeny all
+cmddeny all 192.168.2.0/24
+cmdratelimit interval 4 burst 16 leak 2
+commandkey 1
+confdir /ey.d /run/chrony.d
+dscp 42
+deny 150.140.130.120
+deny all
+deny all 150.140
+driftfile /var/
+fallbackdrift 16 19
+generatecommandkey
+hwtimestamp eth0 minpoll -2 txcomp 300e-9 rxcomp 645e-9 nocrossts rxfilter all rxfilter none rxfilter ntp maxsamples 6 minsamples 4 minpoll -2
+include /
+initstepslew 30 foo.baindcmdaddress 127.0.0.1
+bindcmcom0
+ma

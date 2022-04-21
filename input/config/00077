@@ -1,0 +1,46 @@
+#Com
+! C
+
+%
+!
+allow 150.140.130
+allow 2.2.2.2/21
+user ;n~
+user ;ntent
+; 
+%
+%~ot
+
+allow
+allow 1.1.1.1/24
+allow 150
+allow 2.2.2.2/21
+user ;n~
+user ;Cnt
+!
+allow 150
+allow 2.2.2
+; %
+%Ch
+;Com
+!
+!
+allow 150
+allow 2.2.2.2/21
+user ;n~
+user t
+%
+%~ot
+
+allow
+allow 1.1.1.1/24
+allow 130
+allow 2.2.2.2/21
+user ;n~
+user ;Cnt
+!
+allow 130
+allow 2.2.2.2/21
+user ;n~
+use_ ;n2ent%
+%

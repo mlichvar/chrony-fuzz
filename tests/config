@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=1
+export TEST_EARLY_AFL_INIT=1
+export TEST_FATAL_SUCCESS=1
+export TEST_STDIN_FILE="data/emptydir/chrony.conf"
+
+run_test chronyd -d -d -p -f data/emptydir/chrony.conf

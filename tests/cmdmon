@@ -1,0 +1,17 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_SUBNET=2 CLKNETSIM_FUZZ_PORT=1
+
+run_test chronyd -d -d \
+	'bindcmdaddress /clknetsim/unix/chronyd.sock' \
+	'dumpdir dumpdir' \
+	'keyfile data/chrony.keys' \
+	'local stratum 5' \
+	'manual' \
+	'server 192.168.123.4' \
+	'server 192.168.123.6 nts offline' \
+	'server node2.net1.clk key 2' \
+	'server noexist.net1.clk' \
+	'smoothtime 400 0.001'

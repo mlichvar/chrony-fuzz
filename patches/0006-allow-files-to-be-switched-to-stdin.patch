@@ -1,0 +1,38 @@
+From e2baec89b1e224c1d2f30aca1e6a1572f23f8993 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Tue, 12 Apr 2022 16:16:39 +0200
+Subject: [PATCH 06/19] allow files to be switched to stdin
+
+---
+ util.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/util.c b/util.c
+index 61a9e89b..8681a32c 100644
+--- a/util.c
++++ b/util.c
+@@ -1259,7 +1259,7 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+              char mode, mode_t perm)
+ {
+   const char *file_mode;
+-  char path[PATH_MAX];
++  char path[PATH_MAX], *env;
+   LOG_Severity severity;
+   int fd, flags;
+   FILE *file;
+@@ -1269,6 +1269,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+   if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
+     return NULL;
+ 
++  env = getenv("TEST_STDIN_FILE");
++  if (env && strcmp(env, path) == 0) {
++    DEBUG_LOG("Opened %s as stdin", path);
++    return stdin;
++  }
++
+   switch (mode) {
+     case 'r':
+     case 'R':
+-- 
+2.35.1
+

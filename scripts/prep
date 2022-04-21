@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+CHRONY_GIT=${CHRONY_GIT:-https://github.com/mlichvar/chrony.git}
+CLKNETSIM_GIT=${CLKNETSIM_GIT:-https://github.com/mlichvar/clknetsim.git}
+CHRONY_REV=${CHRONY_REV:-master}
+CLKNETSIM_REV=${CLKNETSIM_REV:-master}
+WORK_DIR=${WORK_DIR:-work}
+
+patch_dir=$(pwd)/patches
+
+mkdir -p "$WORK_DIR"
+pushd "$WORK_DIR"
+
+rm -rf clknetsim
+git clone --depth 1 "$CLKNETSIM_GIT"
+pushd clknetsim
+git checkout "$CLKNETSIM_REV"
+popd
+
+rm -rf chrony
+git clone --depth 1 "$CHRONY_GIT"
+pushd chrony
+git checkout "$CHRONY_REV"
+git am "$patch_dir"/*.patch
+popd
+
+popd

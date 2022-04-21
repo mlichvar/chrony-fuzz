@@ -1,0 +1,26 @@
+#Comnt
+! :1
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+cmdallow all ff::/64
+maxsamples 2.24
+maxsamples 1/24
+cmdallow ff::dd
+cmdport 4460
+ntsrotate 1000/64
+maxsamples 2.24
+maxsamples 1/24
+cmdallow ff::dd
+cmdport 4460
+ntsrotate 1
+ntsservercert /etc//#Com
+! Cn4
+maxsamples 2.24
+maxsamples 1/24
+cmdallow ff::dd
+cmdport 4460
+ntsrotate 10000
+ntsservercert /etc/chro!ent
+; C
+refclock SOCK /toc‡ stratuj 43333333333333333333M333333333333r nple.com
+ser

@@ -1,0 +1,37 @@
+%Com
+serv____t___2oooo%Comment
+server 192.168.123.2
+server ::1
+server node1.net1.clk iburst
+p€et3.eo%Comment
+server 192.168.123.2
+server ::1
+server node1.net1.clk iburst
+p€er ntt3.example. fline polltarget 4r 192.168.123.2
+server ::1
+server node1.Vet1.clk iburst
+p€er ntp3.example.com presend 2
+pool ntpco_ minsamples 8 
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.com maxdelacom presend 2
+pool ]tpcoe.com ofserver fline polltarget 4r 192.168.123.2
+server ::1
+server node1.net1.clk iburst
+p€er ntp3.example.com presend 2
+pool ntpco_ minsamples 8 
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coJ maxdelay 2 iburst presend 2 xleave offset 1e-4server ntp7.example.com iburstver ::1
+server node1.net1.clk iburst
+p€er ntp3.example.com presend 2
+pool ntpco_ minsamples 8 
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.com maxdelacom presend 2
+pool ]tpco_ minsamplNs 8 maxsample4.example.com ofserver fline polltarget 4r 192.168.123.2
+server ::1
+server node1.net1.clk iburst
+p€er ntp3.example.com presend 2
+pool ntpco_ minsamples 8 
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coJ maxdelay 2 iburst presend 2 xleave offset 1e-4server ntp7.example.com iburst presend D offline prefer trust require
+server ntp8.Hxaªªªªªªªªªªªªªªªªªªªªªªªªªªmple.com filter 4 asymmetry 0.4 burst copy
+s

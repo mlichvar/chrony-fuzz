@@ -1,0 +1,147 @@
+#!/bin/bash
+
+[ -f env ] && . ./env
+
+test_name=$(basename "$0")
+
+CLKNETSIM_RANDOM_SEED=${CLKNETSIM_RANDOM_SEED:-1234}
+WORK_DIR=${WORK_DIR:-work}
+
+export CLKNETSIM_RANDOM_SEED
+export PATH=$WORK_DIR/chrony:$PATH
+export ASAN_OPTIONS=abort_on_error=1:symbolize=0:detect_leaks=0
+export UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1
+
+[ $# -ge 1 ] && input=$1 || input=input/$test_name
+output=$WORK_DIR/output/$test_name
+
+if [ "$output" = "$input" ]; then
+	echo "Output is same as input"
+	exit 1
+fi
+
+if ! [ -x "$WORK_DIR/chrony/chronyd" ] || ! [ -x "$WORK_DIR/chrony/chronyc" ]; then
+	echo "Missing chrony binaries"
+	exit 1
+fi
+
+single() {
+	args=()
+	for arg; do
+		if [ "$arg" = "@@" ]; then
+			tmpfile=$(mktemp)
+			cat > "$tmpfile"
+			args+=("$tmpfile")
+		else
+			args+=("$arg")
+		fi
+	done
+
+	$TEST_WRAPPER "${args[@]}"
+	r=$?
+
+	[ -f "$tmpfile" ] && rm -f "$tmpfile"
+
+	return $r
+}
+
+run() {
+	local input=$1
+	shift 1
+
+	args=()
+	for arg; do
+		if [ "$arg" = "@@" ]; then
+			args+=("$input")
+		else
+			args+=("$arg")
+		fi
+	done
+
+	$TEST_WRAPPER "${args[@]}" < "$input"
+}
+
+check() {
+	local verbose=0 failed=0 ok=0 jobs=0 nproc
+
+	if [[ "$1" =~ verbose ]]; then
+		verbose=1
+		nproc=1
+	else
+		nproc=$(nproc)
+	fi
+
+	shift 1
+
+	for i in "$input"/*; do
+		(
+			ulimit -c 0
+			if [ $verbose -eq 0 ]; then
+				run "$i" "$@" &> /dev/null
+			else
+				echo "$i"
+				run "$i" "$@"
+			fi
+			code=$?
+			[ $code -eq 0 ] && exit 0
+
+			[[ "$1" =~ chronyc ]] && [ $code -lt 128 ] && exit 0
+
+			echo "FAILED: $* < $i"
+			exit 1
+		) &
+
+		jobs=$((jobs + 1))
+
+		if [ $jobs -ge "$nproc" ]; then
+			wait -n && ok=$((ok + 1)) || failed=$((failed + 1))
+			jobs=$((jobs - 1))
+		fi
+	done
+
+	while [ $jobs -gt 0 ]; do
+		# Workaround for some random failures
+		[ $jobs -le 1 ] && sleep 0.1
+		wait -n && ok=$((ok + 1)) || failed=$((failed + 1))
+		jobs=$((jobs - 1))
+	done
+
+	echo "$test_name: passed $ok failed $failed"
+	return $((failed != 0))
+}
+
+minimize() {
+	mkdir -p "$output"
+	rm -rf "$output/minimized"
+	"$AFL_PATH/afl-cmin" -i "$input" -o "$output/minimized" -- "$@"
+}
+
+showmap() {
+	mkdir -p "$output"
+	"$AFL_PATH/afl-showmap" -C -i "$input" -o "$output/map" -- "$@"
+}
+
+fuzz() {
+	mkdir -p "$output"
+	nice -20 "$AFL_PATH/afl-fuzz" \
+		-T "chrony-$test_name-$CLKNETSIM_RANDOM_SEED" -m none \
+		$([ -f "dicts/$test_name" ] && echo "-x dicts/$test_name") \
+		-i "$input" -o "$output" -- "$@"
+}
+
+run_test() {
+	case "$TEST_MODE" in
+		single)
+			single "$@";;
+		check|checkverbose)
+			check "$TEST_MODE" "$@";;
+		minimize)
+			minimize "$@";;
+		showmap)
+			showmap "$@";;
+		fuzz|"")
+			fuzz "$@";;
+		*)
+			echo "Unknown test mode"; exit 1;;
+	esac
+}

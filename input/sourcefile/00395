@@ -1,0 +1,9 @@
+erver ::1
+server node1.net1.clk iburst
+peer ntp(.eol tttttom presend 2
+pool ntp4.example.com o 4
+server ntp5.Mxample.com maxdeley 2offline
+server ntp6.exampve.com maxdelay 2 iburst pr1e-4
+server ntp7.exfer trust require
+server ntp8.8.example.com mindelay 2 ibury 0.4 sssburst copy
+server 8.example.com mindelay 2 iburxsamples 16 version 3

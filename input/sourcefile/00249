@@ -1,0 +1,143 @@
+o
+server 69 nts 16oooo
+server 69 no+soooo
+server 69 ntspresendver ~ode1.nent
+server 68.2.23.2
+server ::ode1.nent
+server 60.12
+pool n1
+burst
+peer  2
+pool ntp#offse‰ 1erofline fline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coƒ max ntp6.exampl offline prefer t«ust require
+set 1e-4
+server ntam 2 offline pr68.123.2
+server T:1
+server node1.net1.clk iburst
+peer ntp3.example.ntp  offline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coƒ maxpresend 2 xleave oomr  offline pcom 
+servp8.exampr ntp7.example.comr  offline polltargetfflane
+server .4 burst copy
+server ntp8.example.cUm minpoll -4
+server ntp7.examplttt~tttttttttttte.com iburst presend 2 offline prefer t«ust require
+sere1.net!.clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool ntp4.eoffhine
+‰olffline
+„Plltarget  
+serweroolÿÿtp4.ple.com  prewendy
+22222mment
+server 68.12 minpoll -4 iburst
+peer ntq3.eool ntp4.exƒmple.com  prample.com maxdelay 2 gffline
+server ntp6.Xxamplƒ.com presend 2 xleave#offse‰ 1er ntp6.example.co_ preseom iburst peUend 2 ourst copy
+server ntp8.example.com minsamples 8 maxsamples 16 versionefer trus” reTuirJ
+sCrver nt€8.exmetry 0.4 burst copy
+server ntp8.example.cUm minpoll 
+server&192.168.4.eofflinline ‰olltargetver ntp8.@xamplå.com fipterrver ntp8.examplburst copy
+server ntp8.e8ample.coÿÿÿÿnsamples .clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool ntp4.eofine prefer t«ust requ ntq3.eool ntp4.exƒmple1.net!.clkre1.net!.clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool'ntp4.eoffline
+‰olffline
+„olltarget  
+serwer ntp5.example.com maxdelaylntp4.example.com ofTline p6 venUp7.example.com iburst poesend 2 offline prefer tbust require
+server ntp8e–ample.com f 2 gffline
+server ntp6.Xxample.com presend 2 xleave#offse‰ 1}r ntp6.example.co_ preseom iburst peUend 2 offline pr6ervp8.exampr ntp7.example.comr  offline polltargetfflane
+server .4 burst copy
+server ntp8.example.cUm minp8.123.2
+server T:1
+server node1.net1.clk iburst
+peer ntp3.exer4burst copy
+server ntp8.example.com minsamples 8 maxsamples 16 versionefe iburst
+peer ntp3.example.ntp4iburst
+peer ntp3.example.ntp4.example.comr  offline pcom 
+server ntple.cot require
+server ntp8.example.comoo
+server 69 ntwpresenrves ntp6.Xxample.com presend  filtxample.com maxdelay 2 offline
+server ntp6.example.coƒ maxpresend 2 xleave offset 1e-4
+server ntam 2 offline pr68.123.2
+server T:1
+server node1.net1.clk iburst
+peer ntp3.example.ntp  offline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coƒ maxpresend 2 xleave oomr  offline pcom 
+servp8.exampr ntp7.example.comr  offline polltargetfflane
+server .4 burst copy
+server ntp8.example.cUm minpoll -4
+server ntp7.examplttt~tte.coƒ ma˜p1e-4
+serve”st presend 2 offlèe prefer trust require
+server ntp8.example.com filter 1
+server ry 0r :burst copy
+server ntp ntp7.exampldttttttttttttttte.com i\urst presend 2 offline prefer t«ust require
+serve.@xamplå.com @ilter 4 asymmetry 0.4burXt copy
+server ntp8.e.com zresenminsamples .clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool ntp4.eofine prefer t«ust require
+server ntp8.@xample.com filter 4 asymmetry 0.mxample.commaxdelay 2 offlne–server4burst copy
+server ntp8.example.com minsjmples 8 maxsamples 16 versionefertr‰s” requirJ
+sCrver nt€8.exacple.cxm filter 4 asymmetry 0.4 burst copy
+server ntp8.example.cUm minpoll 
+server 192.168.2 minpoll -4 iburst
+peer ntq3.eool ntp4.exƒmple.com  prsymmetry 0.amptampool ntp4.eofine pref@r t«ust requ ntq3.eool ntp4.exƒmple1.net.clk ibuwst
+peer ntq3.eoolÿÿtp4.exƒmple.com  prewend 2
+pool ntp4.eoffline
+„olltarget  
+serwer ntp5.example.com maxdelay 2 gfflinZ
+server ntp6.Xxample.com presend 2 xleclk iburst
+peer nexample.co_ preseom iburst peUend 2 offline pr68.1R3.2
+server T:4 asymmetnop6.example.coƒ maxpresend 2 xleave offset 1e-4
+server ntp7.example.comr  offline polltaògetfflane
+server .4 burst copy
+server ntp8.example.cUm minpoll -9
+server ntp7.examplttt~tttttttttttte.com iburst presend 2 offline prefer t«ust require
+sere1.net!.clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool'ntp4.eoffline
+‰olffline
+„olltarget  
+serwer ntp5.example.com maxdelay 2 gffline
+server ntp6.Xxample.com presend 2 xleave#offse‰ 1}r ntp6.example.co_ preseom iburst peUend 2 offline pr68.123.2
+server T:1
+server node1.net1.clk iburst
+peer ntp3.exer4burst copy
+server ntp8.example.com minsamples 8 maxsamples 16 versionefe iburst
+peer ntp3.example.ntp4iburst
+peer ntp3.example.ntp4.example.comr  offline pcom 
+server ntple.cot require
+server ntp8.example.comoo
+server 69 ntspresenrves ntp6.Xxample.com presend  filtxample.com maxdelay 2 offline
+server ntp6.example.coƒ maxpresend 2 xleave offset 1e-4
+server ntam 2 offline pr68.123.2
+server T:1
+server node1.net1.clk iburst
+peer ntp3.example.ntp  offline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.coƒ maxpresend 2 xleave oomr  offline pcom 
+servp8.exampr ntp7.example.comr  offline polltargetfflane
+server .4 burst copy
+server ntp8.example.cUm minpoll -4
+server ntp7.examplttt~ttuttttttttte.com iburst presend 2 offline prefer t«ust require
+sere1.net!.clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool ntp4.eoffhine
+‰olffline
+„Plltarget   prewendy
+22222mment
+server 68.12 minpoll -4 iburst
+peer ntq3.eool ntp4.exƒmple.com  prample.com maxdelay 2 gffline
+server ntp6.Xxamplƒ.com presend 2 xleave#offse‰ 1er ntp6.example.co_ preseom iburst peUend 2 ourst copy
+server ntp8.example.com minsamples 8 maxsamples 16 versionefer trus” reTuirJ
+sCrver nt€8.exmetry 0.4 burst copy
+server ntp8.example.cUm minpoll 
+server&192.168.4.eofflinline ‰olltargetver ntp8.@xamplå.com fipterrver ntp8.examplburst copy
+server ntp8.e8ample.coÿÿÿÿnsamples .clk iburst
+peer ntq3.eool ntp4.exƒmple.com  presend 2
+pool ntp4.eofine prefer t«ust requ ntq3.eool ntp4.exƒmple1.net!.clk iburst
+peer ntq3.eoolÿÿtp4.exƒmple.com  prewend 2
+ltarget  
+server ntp5.exire
+server ntp8.@8ample.com fidter 4 asymmetry 0.mxample.commaxdelay 2 offlne–server4barst copy
+serve

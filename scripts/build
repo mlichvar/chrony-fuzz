@@ -1,0 +1,78 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+WORK_DIR=${WORK_DIR:-work}
+
+if [ $# -lt 2 ]; then
+	echo "$0 gcc|gcc-fast|clang|clang-fast none|asan|msan|gcov|nofuzz [extra-opts]"
+	exit 1
+fi
+
+chrony_cc=$AFL_PATH/afl-$1
+clknetsim_cc=${1%-*}
+san=$2
+shift 2
+extra_conf_opts=$*
+cflags="-O2 -Wall -g $EXTRA_CFLAGS"
+
+pushd "$WORK_DIR"
+
+pushd clknetsim
+
+if [ -z "$NO_CLEAN" ]; then
+	make clean
+fi
+CC=$clknetsim_cc CFLAGS="$cflags -DCLKNETSIM_DISABLE_SYSCALL" make "-j$(nproc)"
+
+popd
+pushd chrony
+
+case "$san" in
+	none)
+		export AFL_HARDEN=1
+		;;
+	asan)
+		export AFL_USE_ASAN=1
+		;;
+	msan)
+		export AFL_USE_MSAN=1
+		# gcc's and clang's strcmp seem to trigger msan
+		cflags+=" -fno-builtin-strcmp"
+		;;
+	gcov)
+		cflags+=" -O0 -D_FORTIFY_SOURCE=0 --coverage"
+		chrony_cc=$clknetsim_cc
+		;;
+	nofuzz)
+		chrony_cc=$clknetsim_cc
+		;;
+	*)
+		echo Unknown sanitizer
+		exit 1
+esac
+
+# UBSAN
+cflags+=" -fsanitize=undefined -fsanitize=float-divide-by-zero"
+cflags+=" -fsanitize=float-cast-overflow -fno-sanitize-recover=all"
+
+echo "Building chrony: $(basename "$chrony_cc") $san $extra_conf_opts"
+
+if [ -z "$NO_CLEAN" ]; then
+	CC=$chrony_cc CFLAGS="$cflags" LDFLAGS="$(pwd)/../clknetsim/clknetsim.so" \
+	./configure \
+		--enable-debug \
+		--enable-ntp-signd \
+		--disable-asyncdns \
+		--with-ntp-era="$(date -u -d 'Jan 1 1960' +'%s')" \
+		$extra_conf_opts
+	make clean
+fi
+
+make "-j$(nproc)"
+
+popd
+
+popd

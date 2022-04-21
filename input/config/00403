@@ -1,0 +1,330 @@
+#Com
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+%Cot
+#Com
+! Cy
+hwtimestamp eth0 minpoll -2 txcomp 300rxcomp 645nocrossts rxfilter all rxfilter none rxfilter ntp maxsamples 6 minsamples 4 minpoll -2
+include /
+initstepslew 30 foo
+initstepslew 30 foo.bar.c -2 txcomp 300e-9 rxcomp #Com
+%; C2
+include /dull
+initstepslew 30 foo.bar.com
+initstepslew 30 foo.bar.c -2 txcomp 300e-9 rxcomp #Com
+!t
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+! :dd
+
+
+; Cot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!enom
+!
+!ent
+; Cot
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+;
+;Cnt
+%#Com
+! :ot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+
+; Cot
+;Cnt
+; Co„
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+
+; Cot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+
+%#Clm
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+!ent
+;m
+! Cnt
+
+; Co„
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!enom
+!
+!enCot
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+
+; Cot
+;Cnt
+%#Com
+! :ot
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+;
+;Cnt
+%#
+
+!enom
+! Cnt
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!ent
+; Cot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+
+; Cot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+
+%#Com
+!
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!ent
+; Cot
+;Cnt
+%t
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+
+; Cot
+;Cnt
+%#Clm
+! :1
+broadcast 10 192::dd
+
+!enom
+!
+!ent
+; 
+! Cnt
+!ent
+; Co„
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+!en ot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!ent
+; Cot
+;Cnt
+%
+! :ot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+
+%#Cm
+! Cnt
+
+; Co„
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!enom
+!
+!ent
+; Cot
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+;
+;Cnt
+%#Clm
+
+broadcast 10 192::dd
+
+!om
+!
+!ent
+; Co„
+
+%#Com
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+!ent
+;
+;Cnt
+%#Com
+
+broadcast 10 192::dd
+
+!ent
+; Cot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+!enom
+! Cnt
+
+; Cot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+
+%#o0
+allow 2.2.2.2/21
+allow 255
+allow all
+allow 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+cmdallow all ff::/64
+cmdallow 192.168.1.0/24
+cmdallow ::1/24
+cmdallow ff::dd
+cmddeny all
+cmddeny all 192.168.2.0/24
+cmdratelimit interval 4 burst 16 leak 2
+commandkey 1
+confdirs  :1

@@ -1,0 +1,8 @@
+#r .nt
+!
+refclock bOCK / stratum 4 width 0local 
+!'; C
+refclock SOCK / stratum 0local 
+!
+refclock SOCK / stratum 4 width 0local 
+.3 y

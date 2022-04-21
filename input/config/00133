@@ -1,0 +1,5 @@
+#r .nt
+!
+; C
+refclock SOCK / stratum 4 width 0local 
+.3 pps 

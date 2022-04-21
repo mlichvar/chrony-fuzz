@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+
+import pcapy
+import struct
+import sys
+
+if len(sys.argv) < 3:
+    print("Usage: {} cmd-resp pcap...".format(sys.argv[0]), file=sys.stderr)
+    sys.exit(1)
+
+mode = sys.argv[1]
+
+for f in sys.argv[2:]:
+    cap = pcapy.open_offline(f)
+
+    while True:
+        (header, frame) = cap.next()
+        if len(frame) == 0:
+            break
+
+        if cap.datalink() == pcapy.DLT_EN10MB:
+            udp_payload = bytearray(frame[14 + 20 + 8:])
+        else:
+            print("Unsupported datalink type")
+            sys.exit(2)
+
+        if mode == "cmd-resp":
+            udp_payload[19] |= 1
+        else:
+            print("Unknown mode", file=sys.stderr)
+
+        print(len(udp_payload), file=sys.stderr)
+
+        hdr = struct.pack("!H", len(udp_payload))
+        sys.stdout.buffer.write(hdr + udp_payload)

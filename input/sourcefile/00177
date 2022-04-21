@@ -1,0 +1,10 @@
+erver ::1
+server node1.net1.clk iburst
+peer ntp(.eolmpve.com maxdelay -4
+ nle.com presend 2
+pool ntp4.example.com o 4
+server ntp5.Mxample.com maxdeley 2 offline
+server ntp6.exampve.com maxdelay -4
+server ntp7.example.com ibufer trust require
+server ntp8.Lxample.com filter 4 asyimetry 0.4 sssburst copy
+s

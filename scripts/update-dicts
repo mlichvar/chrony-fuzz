@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+WORK_DIR=${WORK_DIR:-work}
+
+grep 'str.*cmp.*".*"' "$WORK_DIR/chrony/"{conf,cmdparse}.c | \
+	grep -o '"[A-Za-z_-]*"' | sort -u > dicts/config
+
+grep 'str.*cmp.*".*"' "$WORK_DIR/chrony/"{client,cmdparse}.c | \
+	grep -o '"[A-Za-z_-]*"' | sort -u > dicts/chronyc-cmdline
+
+grep 'str.*cmp.*".*"' "$WORK_DIR/chrony/"cmdparse.c | \
+	grep -o '"[A-Za-z_-]*"' | sort -u > dicts/sourcefile
+echo -e '"server"\n"peer"\n"pool"' >> dicts/sourcefile

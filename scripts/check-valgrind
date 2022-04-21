@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+export TEST_WRAPPER="valgrind --error-exitcode=129"
+
+for build_opts in "gcc nofuzz"; do
+	for extra_conf_opts in \
+		"" \
+		"--disable-nts" \
+		"--disable-ntp" \
+		"--disable-ipv6"
+	do
+		scripts/build $build_opts $extra_conf_opts
+		scripts/check
+	done
+done

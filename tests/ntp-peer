@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=123
+
+run_test chronyd -d -d -t 300 \
+	'keyfile data/chrony.keys' \
+	'local stratum 5 orphan' \
+	'peer 192.168.123.2 filter 2 xleave key 1'

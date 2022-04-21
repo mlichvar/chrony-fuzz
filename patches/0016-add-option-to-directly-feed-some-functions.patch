@@ -1,0 +1,242 @@
+From e11bd94d3e0b39cd5bbdc63e6764d61c95322ee8 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Thu, 14 Apr 2022 16:47:12 +0200
+Subject: [PATCH 16/19] add option to directly feed some functions
+
+---
+ configure      |  2 ++
+ main.c         | 22 ++++++++++++++++++++++
+ ntp_io_linux.c | 12 ++++++++++++
+ privops.c      | 49 +++++++++++++++++++++++++++----------------------
+ 4 files changed, 63 insertions(+), 22 deletions(-)
+
+diff --git a/configure b/configure
+index 15ac1e40..f55ed4dd 100755
+--- a/configure
++++ b/configure
+@@ -808,6 +808,8 @@ then
+   EXTRA_LIBS="$EXTRA_LIBS -lseccomp"
+ fi
+ 
++priv_ops="ADJUSTTIME ADJUSTTIMEX SETTIME BINDSOCKET NAME2IPADDRESS RELOADDNS"
++
+ if [ "x$priv_ops" != "x" ]; then
+   EXTRA_OBJECTS="$EXTRA_OBJECTS privops.o"
+   add_def PRIVOPS_HELPER
+diff --git a/main.c b/main.c
+index 5dc9ebaf..7e584adf 100644
+--- a/main.c
++++ b/main.c
+@@ -438,6 +438,9 @@ parse_int_arg(const char *arg)
+ 
+ /* ================================================== */
+ 
++extern void PRV_TestPrivOps(FILE *f);
++extern int NIO_TestUdpExtractor(FILE *f);
++
+ int main
+ (int argc, char **argv)
+ {
+@@ -468,6 +471,25 @@ int main
+     } else if (!strcmp("--version", argv[optind])) {
+       print_version();
+       return 0;
++    } else if (!strcmp("--internal-fuzz", argv[optind])) {
++      char m;
++
++      if (fread(&m, 1, 1, stdin) != 1)
++        return 0;
++
++      switch (m) {
++        case 'p':
++#ifdef PRIVOPS_HELPER
++          PRV_TestPrivOps(stdin);
++#endif
++          break;
++        case 'x':
++#ifdef HAVE_LINUX_TIMESTAMPING
++          printf("%d\n", NIO_TestUdpExtractor(stdin));
++#endif
++          break;
++      }
++      return 0;
+     }
+   }
+ 
+diff --git a/ntp_io_linux.c b/ntp_io_linux.c
+index 4d099cc9..b19ec9a7 100644
+--- a/ntp_io_linux.c
++++ b/ntp_io_linux.c
+@@ -734,6 +734,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
+ 
+ /* ================================================== */
+ 
++extern int NIO_TestUdpExtractor(FILE *f);
++
++int NIO_TestUdpExtractor(FILE *f)
++{
++  unsigned char buf[4096];
++  NTP_Remote_Address addr;
++
++  return extract_udp_data(buf, &addr, fread(buf, 1, sizeof (buf), f));
++}
++
++/* ================================================== */
++
+ int
+ NIO_Linux_ProcessMessage(SCK_Message *message, NTP_Local_Address *local_addr,
+                          NTP_Local_Timestamp *local_ts, int event)
+diff --git a/privops.c b/privops.c
+index 3fb5cbd5..0f213606 100644
+--- a/privops.c
++++ b/privops.c
+@@ -156,6 +156,7 @@ res_fatal(PrvResponse *res, const char *fmt, ...)
+ 
+ /* HELPER - send response to the fd */
+ 
++#if 0
+ static int
+ send_response(int fd, const PrvResponse *res)
+ {
+@@ -192,6 +193,7 @@ receive_from_daemon(int fd, PrvRequest *req)
+ 
+   return 1;
+ }
++#endif
+ 
+ /* ======================================================================= */
+ 
+@@ -201,9 +203,8 @@ receive_from_daemon(int fd, PrvRequest *req)
+ static void
+ do_adjust_time(const ReqAdjustTime *req, PrvResponse *res)
+ {
+-  res->rc = adjtime(&req->tv, &res->data.adjust_time.tv);
+-  if (res->rc)
+-    res->res_errno = errno;
++  res->rc = 0;
++  res->data.adjust_time.tv = req->tv;
+ }
+ #endif
+ 
+@@ -216,9 +217,7 @@ static void
+ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
+ {
+   res->data.adjust_timex.tmx = req->tmx;
+-  res->rc = ntp_adjtime(&res->data.adjust_timex.tmx);
+-  if (res->rc < 0)
+-    res->res_errno = errno;
++  res->rc = 0;
+ }
+ #endif
+ 
+@@ -230,9 +229,8 @@ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
+ static void
+ do_set_time(const ReqSetTime *req, PrvResponse *res)
+ {
+-  res->rc = settimeofday(&req->tv, NULL);
+-  if (res->rc)
+-    res->res_errno = errno;
++  printf("%ld.%ld\n", req->tv.tv_sec, req->tv.tv_usec);
++  res->rc = 0;
+ }
+ #endif
+ 
+@@ -256,17 +254,12 @@ do_bind_socket(ReqBindSocket *req, PrvResponse *res)
+   SCK_SockaddrToIPSockAddr(sa, sa_len, &ip_saddr);
+   if (ip_saddr.port != 0 && ip_saddr.port != CNF_GetNTPPort() &&
+       ip_saddr.port != CNF_GetAcquisitionPort() && ip_saddr.port != CNF_GetPtpPort()) {
+-    SCK_CloseSocket(sock_fd);
+     res_fatal(res, "Invalid port %d", ip_saddr.port);
+     return;
+   }
+ 
+-  res->rc = bind(sock_fd, sa, sa_len);
+-  if (res->rc)
+-    res->res_errno = errno;
+-
+-  /* sock is still open on daemon side, but we're done with it in the helper */
+-  SCK_CloseSocket(sock_fd);
++  printf("%d %d\n", (int)sa_len, sock_fd);
++  res->rc = 0;
+ }
+ #endif
+ 
+@@ -294,7 +287,6 @@ do_name_to_ipaddress(ReqName2IPAddress *req, PrvResponse *res)
+ static void
+ do_reload_dns(PrvResponse *res)
+ {
+-  DNS_Reload();
+   res->rc = 0;
+ }
+ #endif
+@@ -304,19 +296,20 @@ do_reload_dns(PrvResponse *res)
+ /* HELPER - main loop - action requests from the daemon */
+ 
+ static void
+-helper_main(int fd)
++helper_main(FILE *f)
+ {
+   PrvRequest req;
+   PrvResponse res;
+   int quit = 0;
+ 
+   while (!quit) {
+-    if (!receive_from_daemon(fd, &req))
+-      /* read error or closed input - we cannot recover - give up */
++    if (fread(&req, 1, sizeof (req), f) != sizeof (req))
+       break;
+ 
+     memset(&res, 0, sizeof (res));
+ 
++    printf("op %d\n", req.op);
++
+     switch (req.op) {
+ #ifdef PRIVOPS_ADJUSTTIME
+       case OP_ADJUSTTIME:
+@@ -357,15 +350,23 @@ helper_main(int fd)
+         break;
+     }
+ 
+-    send_response(fd, &res);
+   }
+ 
+-  SCK_CloseSocket(fd);
+   exit(0);
+ }
+ 
+ /* ======================================================================= */
+ 
++extern void PRV_TestPrivOps(FILE *f);
++
++void
++PRV_TestPrivOps(FILE *f)
++{
++  helper_main(f);
++}
++
++/* ======================================================================= */
++
+ /* DAEMON - receive helper response */
+ 
+ static void
+@@ -637,6 +638,9 @@ PRV_Initialise(void)
+ void
+ PRV_StartHelper(void)
+ {
++  assert(0);
++  exit(1);
++#if 0
+   pid_t pid;
+   int fd, sock_fd1, sock_fd2;
+ 
+@@ -678,6 +682,7 @@ PRV_StartHelper(void)
+     /* stop the helper even when not exiting cleanly from the main function */
+     atexit(stop_helper);
+   }
++#endif
+ }
+ 
+ /* ======================================================================= */
+-- 
+2.35.1
+

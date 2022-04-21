@@ -1,0 +1,5 @@
+server Cent
+; #C
+server .com maxdelay 2 iburst presend 2 xleave offset 1e-4
+server nw port
+2

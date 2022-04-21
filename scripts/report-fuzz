@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+export LC_ALL=C
+
+printf "%-16s %5s %6s %6s %6s %6s %6s %6s %6s\n" \
+	"Test name" "State" "Time" "Speed" "Cycles" "Corpus" "Found" "Crash" "Hang"
+
+for i in input/*; do
+	name=$(basename "$i")
+	printf "%-20s " "$name"
+
+	stats="$WORK_DIR/output/$name/default/fuzzer_stats"
+	if ! [ -f "$stats" ]; then
+		printf "\n"
+		continue
+	fi
+
+	fuzzer_pid=$(grep 'fuzzer_pid' < "$stats" | cut -d : -f 2)
+	cycles_done=$(grep 'cycles_done' < "$stats" | cut -d : -f 2)
+	execs_per_sec=$(grep 'execs_per_sec' < "$stats" | cut -d : -f 2)
+	run_time=$(grep 'run_time' < "$stats" | awk -F : '{print $2 / 3600}')
+	corpus_count=$(grep 'corpus_count' < "$stats" | cut -d : -f 2)
+	corpus_found=$(grep 'corpus_found' < "$stats" | cut -d : -f 2)
+	saved_crashes=$(grep 'saved_crashes' < "$stats" | cut -d : -f 2)
+	saved_hangs=$(grep 'saved_hangs' < "$stats" | cut -d : -f 2)
+
+	kill -0 "$fuzzer_pid" 2> /dev/null && \
+		pid_state="@" || pid_state=" "
+	[ "$saved_crashes" -gt 0 -o "$saved_hangs" -gt 0 ] && \
+		fuzz_alarm="!" || fuzz_alarm=""
+
+	printf "%s %6.1f %6.1f %6d %6d %6d %6d %6d %s\n" \
+		"$pid_state" "$run_time" "$execs_per_sec" "$cycles_done" \
+		"$corpus_count" "$corpus_found" "$saved_crashes" \
+		"$saved_hangs" "$fuzz_alarm"
+done

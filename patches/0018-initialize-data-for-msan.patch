@@ -1,0 +1,113 @@
+From cb7cea10289d828da2ceaf2b806d408363e550d7 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:45:46 +0200
+Subject: [PATCH 18/19] initialize data for msan
+
+---
+ cmac_nettle.c |  2 ++
+ hash_nettle.c |  2 ++
+ hash_nss.c    |  4 +++-
+ util.c        | 14 ++++++++++++--
+ 4 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/cmac_nettle.c b/cmac_nettle.c
+index 5b2c0d4c..6adb8b65 100644
+--- a/cmac_nettle.c
++++ b/cmac_nettle.c
+@@ -92,6 +92,8 @@ CMC_Hash(CMC_Instance inst, const void *in, int in_len, unsigned char *out, int
+   if (out_len > CMAC128_DIGEST_SIZE)
+     out_len = CMAC128_DIGEST_SIZE;
+ 
++  memset(out, 0, out_len);
++
+   switch (inst->key_length) {
+     case AES128_KEY_SIZE:
+       cmac_aes128_update(&inst->context.aes128, in_len, in);
+diff --git a/hash_nettle.c b/hash_nettle.c
+index 4a214f6e..3420e704 100644
+--- a/hash_nettle.c
++++ b/hash_nettle.c
+@@ -103,6 +103,8 @@ HSH_Hash(int id, const void *in1, int in1_len, const void *in2, int in2_len,
+   if (out_len > hash->digest_size)
+     out_len = hash->digest_size;
+ 
++  memset(out, 0, out_len);
++
+   hash->init(context);
+   hash->update(context, in1_len, in1);
+   if (in2)
+diff --git a/hash_nss.c b/hash_nss.c
+index 4302447e..4cb88a22 100644
+--- a/hash_nss.c
++++ b/hash_nss.c
+@@ -82,7 +82,9 @@ HSH_Hash(int id, const void *in1, int in1_len, const void *in2, int in2_len,
+          unsigned char *out, int out_len)
+ {
+   unsigned char buf[MAX_HASH_LENGTH];
+-  unsigned int ret = 0;
++  unsigned int ret = out_len;
++
++  memset(out, 0, out_len);
+ 
+   if (in1_len < 0 || in2_len < 0 || out_len < 0)
+     return 0;
+diff --git a/util.c b/util.c
+index 22c058c6..e3b9f992 100644
+--- a/util.c
++++ b/util.c
+@@ -1107,6 +1107,8 @@ create_dir(char *p, mode_t mode, uid_t uid, gid_t gid)
+   int status;
+   struct stat buf;
+ 
++  memset(&buf, 0, sizeof (buf));
++
+   /* See if directory exists */
+   status = stat(p, &buf);
+ 
+@@ -1198,6 +1200,8 @@ UTI_CheckDirPermissions(const char *path, mode_t perm, uid_t uid, gid_t gid)
+ {
+   struct stat buf;
+ 
++  memset(&buf, 0, sizeof (buf));
++
+   if (stat(path, &buf)) {
+     LOG(LOGS_ERR, "Could not access %s : %s", path, strerror(errno));
+     return 0;
+@@ -1376,6 +1380,8 @@ UTI_RemoveFile(const char *basedir, const char *name, const char *suffix)
+   if (!join_path(basedir, name, suffix, path, sizeof (path), LOGS_ERR))
+     return 0;
+ 
++  memset(&buf, 0, sizeof (buf));
++
+   /* Avoid logging an error message if the file is not accessible */
+   if (stat(path, &buf) < 0) {
+     DEBUG_LOG("Could not remove %s : %s", path, strerror(errno));
+@@ -1424,6 +1430,9 @@ static FILE *urandom_file = NULL;
+ void
+ UTI_GetRandomBytesUrandom(void *buf, unsigned int len)
+ {
++  for (int i = 0; i < len; i++)
++	  ((char *)buf)[i] = random() % 256;
++  return;
+   if (!urandom_file)
+     urandom_file = UTI_OpenFile(NULL, DEV_URANDOM, NULL, 'R', 0);
+   if (fread(buf, 1, len, urandom_file) != len)
+@@ -1470,12 +1479,13 @@ void
+ UTI_GetRandomBytes(void *buf, unsigned int len)
+ {
+ #ifdef HAVE_ARC4RANDOM
++  if (0)
+   arc4random_buf(buf, len);
+ #elif defined(HAVE_GETRANDOM)
++  if (0)
+   get_random_bytes_getrandom(buf, len);
+-#else
+-  UTI_GetRandomBytesUrandom(buf, len);
+ #endif
++  UTI_GetRandomBytesUrandom(buf, len);
+ }
+ 
+ /* ================================================== */
+-- 
+2.35.1
+

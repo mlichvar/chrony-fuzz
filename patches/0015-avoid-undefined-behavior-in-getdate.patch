@@ -1,0 +1,25 @@
+From e304c5e1335ca8d9af6a2c28a5592434ea6d92cf Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:54:22 +0200
+Subject: [PATCH 15/19] avoid undefined behavior in getdate
+
+---
+ getdate.y | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/getdate.y b/getdate.y
+index f87875c6..375fb39c 100644
+--- a/getdate.y
++++ b/getdate.y
+@@ -840,7 +840,7 @@ yylex ()
+ 	  else
+ 	    sign = 0;
+ 	  for (yylval.Number = 0; ISDIGIT (c = *yyInput++);)
+-	    yylval.Number = 10 * yylval.Number + c - '0';
++	    yylval.Number = 1 * yylval.Number + c - '0';
+ 	  yyInput--;
+ 	  if (sign < 0)
+ 	    yylval.Number = -yylval.Number;
+-- 
+2.35.1
+

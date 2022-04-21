@@ -1,0 +1,43 @@
+From 5966e671822cc426104e376e65139cdcf1f40769 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:54:03 +0200
+Subject: [PATCH 12/19] bypass signd
+
+---
+ ntp_signd.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/ntp_signd.c b/ntp_signd.c
+index 77b3249a..e63cd62e 100644
+--- a/ntp_signd.c
++++ b/ntp_signd.c
+@@ -131,7 +131,11 @@ open_socket(void)
+     return 0;
+   }
+ 
++#if 0
+   sock_fd = SCK_OpenUnixStreamSocket(path, NULL, 0);
++#else
++  sock_fd = SCK_OpenUnixDatagramSocket(NULL, NULL, 0);
++#endif
+   if (sock_fd < 0) {
+     sock_fd = INVALID_SOCK_FD;
+     return 0;
+@@ -195,8 +199,14 @@ read_write_socket(int sock_fd, int event, void *anything)
+     if (!inst->sent)
+       SCH_GetLastEventTime(NULL, NULL, &inst->request_ts);
+ 
++#if 0
+     s = SCK_Send(sock_fd, (char *)&inst->request + inst->sent,
+                  inst->request_length - inst->sent, 0);
++#else
++    NIO_SendPacket((NTP_Packet *)((char *)&inst->request + inst->sent), &inst->remote_addr,
++                   &inst->local_addr, inst->request_length - inst->sent, 0);
++    s = MAX(8, inst->request_length - 16);
++#endif
+ 
+     if (s < 0) {
+       close_socket();
+-- 
+2.35.1
+

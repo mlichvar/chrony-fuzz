@@ -1,0 +1,44 @@
+From 128749fabc1757a72e57c03b7b8f2f7e6f7e2e3a Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 20 Apr 2022 16:51:30 +0200
+Subject: [PATCH 10/19] reduce maximum chronyc retries and timeout
+
+---
+ client.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/client.c b/client.c
+index ed1835d5..182b1645 100644
+--- a/client.c
++++ b/client.c
+@@ -2906,6 +2906,9 @@ process_cmd_waitsync(char *line)
+   if (sscanf(line, "%d %lf %lf %lf", &max_tries, &max_correction, &max_skew_ppm, &interval))
+     ;
+ 
++  max_tries = CLAMP(1, max_tries, 3);
++  interval = CLAMP(0.0, max_tries, 10.0);
++
+   /* Don't allow shorter interval than 0.1 seconds */
+   if (interval < 0.1)
+     interval = 0.1;
+@@ -2977,7 +2980,7 @@ process_cmd_timeout(const char *line)
+     LOG(LOGS_ERR, "Timeout %d is too short", timeout);
+     return 0;
+   }
+-  initial_timeout = timeout;
++  initial_timeout = MIN(timeout, 10000);
+   return 1;
+ }
+ 
+@@ -2989,7 +2992,7 @@ process_cmd_retries(const char *line)
+   int retries;
+ 
+   retries = atoi(line);
+-  if (retries < 0 || retries > 30) {
++  if (retries < 0 || retries > 5) {
+     LOG(LOGS_ERR, "Invalid maximum number of retries");
+     return 0;
+   }
+-- 
+2.35.1
+

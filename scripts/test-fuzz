@@ -1,0 +1,43 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
+export TEST_EARLY_AFL_INIT=1
+export AFL_BENCH_UNTIL_CRASH=1 AFL_NO_UI=1 AFL_EXIT_ON_TIME=120
+
+export WORK_DIR="$WORK_DIR/fuzz-test"
+
+rm -rf "$WORK_DIR"
+mkdir -p "$WORK_DIR"
+cp -pr "$WORK_DIR/../chrony" "$WORK_DIR/../clknetsim" "$WORK_DIR"
+
+input=$WORK_DIR/input
+output=$WORK_DIR/output
+
+mkdir -p "$input"
+echo > "$input/00001"
+
+for cc in gcc clang; do
+	for bug in 1 2 3; do
+		case $bug in
+			1) scripts/build $cc-fast asan || exit 2;;
+			2);;
+			3) scripts/build $cc-fast msan || continue;;
+		esac
+
+		rm -rf "$output"
+
+		echo
+		echo "testing $cc bug=$bug"
+		echo
+
+		TEST_MODE="" run_test "$WORK_DIR/chrony/chronyd" "--test-bug=$bug"
+		ls -l "$output/default/crashes/id"* > /dev/null || exit 1
+
+		TEST_MODE=single run_test "$WORK_DIR/chrony/chronyd" "--test-bug=$bug" < \
+			$(echo "$output/default/crashes/id"* | head -n1)
+	done
+done
+
+echo OK

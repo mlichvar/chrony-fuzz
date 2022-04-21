@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
+export TEST_STDIN_FILE="data/emptydir/192.168.123.2.dat"
+
+run_test chronyd -d -d -r -t 2 \
+	'server 192.168.123.2' \
+	'dumpdir data/emptydir'

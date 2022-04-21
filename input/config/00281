@@ -1,0 +1,105 @@
+#Com
+! Cnt
+!ent
+; Cot
+;Cnt
+%t
+
+allow
+allow 1.1.1.1/24
+allow 150.140.130
+allow 100.20
+allow 255
+allow 2.2.2.2/21
+allow all
+allow all 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindacqaddress 127.0.0.1
+bindacqaddress ::1
+bindaddress 127.0.0.1
+bindaddress ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+binddevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+clientloglimit 10000
+clockprecision 10e-9
+cmdallow all ff::/64
+cmdallow 192.168.1.0/24
+cmdallow ::1/24
+cmdallow ff::dd
+cmddeny all
+cmddeny all 192.168.2.0/24
+cmdratelimit interval 4 burst 16 leak 2
+commandkey 1
+confdir data/confdir data/emptydir
+dscp 42
+deny 150.140.130.120
+deny all
+deny all 150.140
+driftfile /var/lib/chrony/drift
+fallbackdrift 16 19
+generatecommandkey
+hwtimestamp eth0 minpoll -2 txcomp 300e-9 rxcomp 645e-9 nocrossts rxfilter all rxfilter none rxfilter ntp rxfilter ptp maxsamples 6 minsamples 4 minpoll -2
+include data/confdir/1.conf
+initstepslew 30 foo.bar.com
+initstepslew 30 foo.bar.com baz.quz.com
+keyfile /etc/chrony.keys
+leapsectz right/UTC
+local
+local distance 1.0 orphan
+local stratum 10
+log rtc measurements rawmeasurements statistics tracking refclocks tempcomp
+logchange 0.5
+logdir /var/log/chrony
+mailonchange root@localhost 0.5
+makestep 10 -1
+manual
+maxchange 1000 1 2
+maxdistance 1.0
+maxdrift 100
+maxntsconnections 100
+nocerttimecheck 3
+noclientlog
+nosystemcert
+ntpsigndsocket /var/lib/samba/ntp_signd
+ntstrustedcerts /etc/chrony.d/trusted.crt
+ntstrustedcerts 1 /etc/chrony.d/trusted.crt
+ntsntpserver foo.example.com
+ntsdumpdir /var/lib/chronUUUUUUUUUUUUUUUUUUUUUUUUU10000
+ntsservercert /etc/chrony.d/se
+confdir data/confdir data/chrony.d/server.key
+ntsservercert /etc/chrony.d/server.crt
+ntsserverkey /etc/chrony.d/server.key
+ntsprocesses 3
+ntsratelimit interval 4 burst 16 leak 2
+ntsrefresh 10000
+peer ntpc1.example.com
+pool pool1.example.com iburst maxsources 3
+ratelimit interval 4 burst 16 leak 2
+refclock PHC /dev/ptp2:extpps:pin=1 width 0.2 poll 2
+refclock PPS /dev/pps0 dpoll 2 poll 3 lock SHM0 rate 5 minsamples 8
+refclock SHM 0 refid SHM0 delay 0.1 offset 0.2 noselect filter 16
+refclock SOCK /tmp/sock stratum 4 width 0.3 pps tai
+rtcsync
+sched_priority 10
+server ntp1.example.com
+server ntp2.example.com iburst
+server ntp3.example.com presend 2
+server ntp4.example.com offline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.com maxdelay 2 iburst presend 2 xleave offset 1e-4
+server ntp7.example.com iburst presend 2 offline prefer trust require
+server ntp8.example.com filter 4 asymmetry 0.4 burst copy extfield F323
+server ntp8.example.com minsamples 8 maxsamples 16 version 3
+smoothtime 400 0.001 leaponly
+sourcedir /etc/chrony.d /var/run/chrony.d
+stratumweight 0
+tempcomp /sys/class/hwmon/hwmon0/temp2_input 30 /etc/chrony.tempcomp
+tempcomp /sys/class/hwmon/hwmon0/temp2_input 30 26000 0.0 0.000183 0.0

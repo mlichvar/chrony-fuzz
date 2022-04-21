@@ -1,0 +1,3 @@
+%Com
+seerver :1..clk iburst
+ ntp

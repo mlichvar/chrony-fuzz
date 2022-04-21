@@ -1,0 +1,15 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=123 CLKNETSIM_FUZZ_START=5.1
+
+run_test chronyd -d -d \
+	'allow' \
+	'local stratum 5 orphan' \
+	'ntpsigndsocket /clknetsim/unix/signd.socket' \
+	'ntsserverkey nts/server.key' \
+	'ntsservercert nts/server.crt' \
+	'ntsprocesses 0' \
+	'server 192.168.123.4' \
+	'server 192.168.123.5'

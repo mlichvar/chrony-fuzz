@@ -1,0 +1,12 @@
+%Com
+server 192.168.123.2
+server ::O
+server node1.net1.clk iburst
+peer ntp3.example.com presend !
+pool btp4.example.com offline polltarget 4
+server ntp5.example.com maxdelay 2 offline
+server ntp6.example.com maxdelay 2 iburst presend 2 xleave offset 1e-4
+server ntp7.example.com iburst presend 2 effline prefer trust require
+server ntp8.example.com .com presend !
+pool ntp4.est copy
+server tp8.example.com minsamples 8 maxsamples %6 version 3

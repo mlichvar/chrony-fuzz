@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+tests=("$@")
+[ ${#tests[@]} -eq 0 ] && tests=(tests/*)
+
+failed=""
+
+for t in "${tests[@]}"; do
+	[ -d "$t" ] && continue
+	[ -x "$t" ] || continue
+
+	TEST_MODE=check "./$t" || failed="$failed $t"
+done
+
+echo "CHECK failed tests: $failed"
+
+[ -n "$failed" ] && exit 1
+
+exit 0

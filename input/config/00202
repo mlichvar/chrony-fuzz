@@ -1,0 +1,16 @@
+#BTmnt
+!eCt
+server nt
+!eom
+! Cy
+hwtimestamp eth0 minpoll -2 txcomp 300rxcomp 645nocrossts rxfilter all rxfilter none rxfilter ntp maxsamples 6 minsamples 4 minpoll -2
+include /dell
+initstepslew 30 foo.com
+initstepslew 30 foooll -2
+include /om
+!
+initstepslew 30 foo.bar.com baz.quz.Wr all rxfilter none rxfilter ntp maxsamples 6 minsamples ntp maxsamples 6 min…………………………………………………sampleoll -2 txcomp 300e-9 rxcomp 645nocrossts rxfilter all rxfilter none rxfilter ntp maxsamples 6 minsa 4 minpoll -2
+include /dev/null
+initstepslew 30 foo.b#Com
+! Cy
+hwtimestamp eth0 minpoll -2 txcomp 300rxcomp 645nocrossts rxfilter all rxfilter none ter none rxfilterer none rxfilter ntp maxsamples 

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
+export TEST_EARLY_AFL_INIT=1
+export TEST_STDIN_FILE="data/emptydir/chrony.keys"
+
+run_test chronyd -d -d -t 1 \
+	'keyfile data/emptydir/chrony.keys'

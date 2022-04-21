@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+if [ $# -lt 1 ]; then
+	echo "$0 TIMEOUT [test]..."
+	exit 1
+fi
+
+export AFL_EXIT_ON_TIME=$1
+export AFL_EXIT_WHEN_DONE=1
+export AFL_AUTORESUME=1
+
+socket=chrony-fuzz
+session=fuzz-$$
+
+shift 1
+
+tests=("$@")
+[ ${#tests[@]} -eq 0 ] && tests=(tests/*)
+
+tmux -L "$socket" new-session -s "$session" -d watch -n 10 scripts/report-fuzz
+
+for t in "${tests[@]}"; do
+	[ -x "$t" ] || continue
+
+	tmux -L "$socket" new-window "./$t; read -p 'Press any key...'"
+done
+
+tmux -L "$socket" select-window -t 0
+tmux -L "$socket" attach-session -t "$session"

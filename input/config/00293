@@ -1,0 +1,44 @@
+#Com
+! Ct
+;Cnt
+%t
+
+allow
+allow 1.1.1.1/24
+allow 140.130
+allow 100.20
+allow 255
+allow 2.2.2.2/21
+allow all
+allow all 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindacqaddress 127.0.0.1
+bindacqaddress ::1
+bindaddress 127.0.0.1
+bindaddress ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+binddevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+clientloglimit 0
+clockprecision 10e-9
+cmdallow all ff::/64
+cmdallow 192.168.1.0/24
+cmdallow ::1/24
+cmdallow ff::dd
+cmddeny all
+cmddeny all 192.168.2.0/24
+cmdratelimit interval 4 burst 16 leak 2
+commandkey 1
+confdir data/calr data/edir
+dscp 42
+deny 150.140.130.120
+deny all
+deny all 150.14
+d

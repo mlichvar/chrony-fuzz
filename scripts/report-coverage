@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+WORK_DIR=${WORK_DIR:-work}
+
+report() {
+	gcovr -r . -s -p | sed 's| [0-9][0-9,-]*$|XXX|'
+	gcov -k ./*.gcda
+}
+
+for build_opts in "gcc-fast gcov"; do
+	for extra_conf_opts in \
+		"" \
+		"--disable-nts" \
+		"--disable-ntp" \
+		"--disable-ipv6"
+	do
+		name=$(echo "$build_opts-$extra_conf_opts" | tr ' ' '-')
+		rm -rf "$WORK_DIR/coverage/$name"
+		mkdir -p "$WORK_DIR/coverage/$name"
+
+		scripts/build $build_opts $extra_conf_opts
+		scripts/check "$@" || :
+
+		pushd "$WORK_DIR/chrony"
+		report > "$WORK_DIR/coverage/$name.report"
+		mv ./*.c.gcov "$WORK_DIR/coverage/$name"
+		popd
+	done
+done

@@ -1,0 +1,85 @@
+From 989fec71c4cad3699aa38a98ed49abfc8a8e6068 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Thu, 14 Apr 2022 16:49:36 +0200
+Subject: [PATCH 17/19] add test bugs
+
+---
+ main.c | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/main.c b/main.c
+index 7e584adf..45e26883 100644
+--- a/main.c
++++ b/main.c
+@@ -438,6 +438,58 @@ parse_int_arg(const char *arg)
+ 
+ /* ================================================== */
+ 
++static int
++test_bug(int bug)
++{
++  unsigned char buf1[16], buf2[4096];
++  int i, r = 0;
++
++  srandom(1);
++
++  if (fread(buf1, 1, sizeof (buf1), stdin) < sizeof (buf1)) {
++    DEBUG_LOG("input too short");
++    return 0;
++  }
++
++  if (buf1[0] != 131) {
++    DEBUG_LOG("didn't pass barrier");
++    return 0;
++  }
++
++  if (fread(buf2, 1, sizeof (buf2), stdin))
++    ;
++
++  DEBUG_LOG("passed barrier %d", buf1[1]);
++
++  switch (bug) {
++    case 1:
++      r = buf1[buf1[1] & 63];
++      break;
++    case 2:
++      r = buf1[buf1[1] & 63] = 1;
++      break;
++    case 3:
++      /* This doesn't seem to work anymore */
++      r = buf2[buf1[1] + buf1[2]];
++      for (i = 0; i < buf1[3]; i++)
++        r += buf2[random() % sizeof (buf2)];
++      break;
++    default:
++      return 0;
++  }
++
++  for (i = 0; i < sizeof (buf1); i++)
++    r += buf1[i];
++  if (r == 1000000) {
++    for (i = 0; i < sizeof (buf2); i++)
++      r += buf2[i];
++  }
++
++  return r;
++}
++
++/* ================================================== */
++
+ extern void PRV_TestPrivOps(FILE *f);
+ extern int NIO_TestUdpExtractor(FILE *f);
+ 
+@@ -490,6 +542,9 @@ int main
+           break;
+       }
+       return 0;
++    } else if (!strncmp("--test-bug=", argv[optind], 11)) {
++      printf("%d\n", test_bug(atoi(argv[optind] + 11)));
++      return 0;
+     }
+   }
+ 
+-- 
+2.35.1
+

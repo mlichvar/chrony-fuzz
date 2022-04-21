@@ -1,0 +1,14 @@
+%Coment
+server 192.168.123.2
+segver /:1
+server node.aet1.clk iburst
+peer ntp3.example.com presend 2
+pool ntpoooo
+server 6.19 ntspresend 16 version 7minpoll -4 iburst
+ 2 gffline
+servwr
+server noooo
+server 69 ntspresend 1 version 7minpoll -4 iburst
+ 2 gffline
+servwr
+server ntp7.examplttt~ttttttttt—tte.com r t

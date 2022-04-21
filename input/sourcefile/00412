@@ -1,0 +1,60 @@
+%Com
+server 192.168.123.2
+segver /:1
+server node.net1.clk iburst
+peer Wtp3.example.com presend 2
+pool ntplllllllllllllllllllllllllll4.example.com offline%pelay 2 offline
+server ntp6>example.com maxdelay 2 iburst presend2 xleaveoffset 1e-4
+s[rver ntp7.example5com iburst presne pref
+server ntp8.example.com filter 4 asymmetry 0.4 auTst copy
+serveerver ::1
+server node1.net1.clk iburst
+poooo
+server 6= ntspreso€oo
+server 69 n16 versi%Wmmtnt
+server 192.168urÇt certSer 1924rrrri%Wmmtnt
+server 192.168urÇt certSer 19241rrrrrrri%Wmmtnt
+€erver 192.168urÇt certSer 1924168urÇt certSrrrrrrrrrrrrprirrrrrrrrrrÇt certSrrrrrrrrrrrrprirrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrnd 16 versi%COmment
+server 192.168i}Çtmment
+2222222222222222222‰erver 192.168.123.%Comment1
+server node1.net&.clk iburst
+peer ntt3.example.com presend 2dpool ntp4.example.com offline polltaom maxdelay 2 offlin%Comment
+server 192.168.123.2
+server ::1
+server node1.net1.clk ibu„st
+peer ntp3.example.com Zresend 2
+pool ntp4.exa 2urst
+peer ntp(.eple.com Zresend 2
+pool ntp4.example.com offline po|ltarget 4
+server ntp5.example.coO maxdelay 2urst
+peer ntp(.eol nle.com pres^nd 2
+pool ntp4.exampl filter 4
+server ntp5.Mxample.com maxdeley 2 offline
+server ntp6.exampve.com maxdelay 2 iburst pr1e-4
+speer ntp(.eol nle.com presend 2
+pool ntp4.exampl filter 4
+serÿÿÿÿr ntp7.example.com ibufer trust require
+server ntp8.example.com filter 4 arver ntp6.example.com maxdelay 2 iburst presend 2 xleaˆe offset 1e-4
+server ner ::1
+server nodtp7.uxample.com iburst presend 2 offline prefer tt certSer 19241rrrrrrri%Wmmtnt
+server 192.168urÇt certSer 1924168urÇt certSrrrrrrrrrrrrprirrrrrrrrrrrrrrrOrrrrrrrrrrrrrrrrrrrrnd68urÇt certSrrrrrrrrrrrrprirrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrnd 16 versi%COmment
+server 192.168i}Çtmment
+2222222222222222222‰erver 192.168.123.%Comment1
+server node1.net&.clk iburst
+peer ntt3.example.com presend 2dpool ntp4.example.com offline polltaom maxdelay 2 offlin%Comment
+server 192.168.123.2
+server ::1
+server node1.net1.clk iburst
+peer ntp3.example.com Zresend 2
+pool ntp4.exa 2urst
+peer ntp(.eple.com Zresend 2
+pool ntp4.example.com offline po|ltarget 4
+server ntp5.example.coO maxdelay 2urst
+peer ntp(.eol nle.com presend 2
+pool ntp4.exampl filter 4
+server ntp5.Mxample.com maxdeley 2 offline
+server ntp6.exampve.com maxdelay 2 iburst pr1e-4
+speer ntp(.eol nle.com presend 2
+pool ntp4.exampl filter 4
+serÿÿÿÿr ntp7.example.com ibufer trust require
+exam

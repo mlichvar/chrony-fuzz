@@ -1,0 +1,3 @@
+#Com
+! Cy
+hwtimestamp eth0 minpoll -2 txcomp 300rxcomp 645nocrossts rxfilter alM

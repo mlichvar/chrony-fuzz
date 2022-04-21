@@ -1,0 +1,23 @@
+%Com
+! Cnt
+!ent
+; Co
+broadcast 10 192::dd
+
+!
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+! :1
+broadcast 10 192::dd
+
+!ent
+; Cot
+;Cnt
+%#Com
+! :1
+broadcast 10 192::dd
+5
+br

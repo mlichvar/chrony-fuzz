@@ -1,0 +1,91 @@
+#Com
+! Cnt
+!ent
+; Cot
+;Cnt
+%
+%Cot
+
+allow
+allow 1.1.1.1/24
+allow 130
+allow 2.2.2.2/21
+allow 255
+allow
+allow all 192.168.2.0/24
+authselectmode ignore
+authselectmode mix
+authselectmode prefer
+authselectmode require
+bindacqaddress 127.0.0.1
+bindacqaddress ::1
+bindaddress 127.0.0.1
+bindaddress ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+binddevice eth0
+bindacqdevice eth0
+bindcmddevice eth0
+broadcast 10 192.168.1.255
+broadcast 10 192.168.100.255 123
+clockprecision 1
+cmdallow all ff::/64
+cmdallow 192.168.1.0/24
+cmdallow ::1/24
+cmdallow ff::dd
+cmddeny all
+cmddeny all 192.168.2.0/24
+cmdratelimit interval 4 burst 16 leak 2
+commandkey 1
+confdir /ey.d d
+dscp 42
+deny 150.140.130.120
+deny all
+deny all 150.140
+driftfile /var/
+fallbackdrift 16 19
+generatecommandkey
+hwtimestamp eth0 minpoll -2 txcomp 300e-9 rxcomp 645e-9 nocrossts rxfilter all rxfilter none rxfilter ntp maxsamples 6 minsamples 4 minpoll -2
+include /dev/null
+initstepslew 30 foo.bar.com
+initstepslew 30 foo.bar.com baz.quz.com
+keyfile /etc/chrony.keys
+leapsectz right/UTC
+local
+local distance 1.0 orphan
+local stratum 10
+log rtc measurements statistics tracking refclocks tempcomp
+logchange 0.5
+logdir /var/log/chrony
+mailonchange root@localhost 0.5
+makestep 10 -1
+manual
+maxchange 1000 7 2
+maxdistance 1.0
+maxdrift 100
+maxntsconnections 100
+nocerttimecheck 3
+noclientlog
+nosystemcert
+ntpsigndsocket /var/lib/samba/ntp_signd
+ntstrustedcerts /etc/.crt
+ntsntpserver foo.example.com
+ntsdumpdir /var/lib/chrony
+ntsport 4460
+ntsrotate 10000
+ntsservercert /etc/chr
+ntsserverkey /etc/chrony.d/server.key
+ntsprocesses 3
+ntsratelimit interval 4 burst 16 leak 2
+ntsrefresh 10000
+peer ntpc1.example.com
+pool pool1.example.com iburst maxsources 3
+ratelimit interval 4 burst 16 leak 2
+refclock PHC /dev/ptp2:extpps:pin=1 width 0.2 poll 2
+refclock PPS /dev/pps0 dpoll 2 poll 3 lock SHM0 rate 5 prefer trust require minsamples 8
+refclock SHM 0 refid SHM0 delay 0.1 offset 0.2 noselect filter 16
+refclock SOCK /tmp/sock stratum 4 width 0.3 pps tai
+rtcsync
+server ntp1.example.com
+server ntp2.example.com iburst
+server ntp3.example.com presend
