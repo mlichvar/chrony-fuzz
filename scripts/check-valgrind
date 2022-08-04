@@ -2,7 +2,10 @@
 
 set -e
 
-export TEST_WRAPPER="valgrind --error-exitcode=129"
+valgrind="valgrind --error-exitcode=129"
+leak_opts="--leak-check=full --errors-for-leak-kinds=definite"
+
+leak_exclude_regex="(config)"
 
 for build_opts in "gcc nofuzz"; do
 	for extra_conf_opts in \
@@ -12,6 +15,17 @@ for build_opts in "gcc nofuzz"; do
 		"--disable-ipv6"
 	do
 		scripts/build $build_opts $extra_conf_opts
-		scripts/check
+
+		leak_tests=""
+		other_tests=""
+		for t in tests/*; do
+			[ -d "$t" ] && continue
+			[ -x "$t" ] || continue
+			[[ "$(basename "$t")" =~ $leak_exclude_regex ]] && \
+				other_tests+=" $t" || leak_tests+=" $t"
+		done
+
+		TEST_WRAPPER="$valgrind $leak_opts" scripts/check $leak_tests
+		TEST_WRAPPER="$valgrind" scripts/check $other_tests
 	done
 done
