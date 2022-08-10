@@ -25,7 +25,7 @@ for build_opts in "gcc-fast gcov"; do
 		rm -f "$WORK_DIR/chrony/"*.{gcno,gcda,gcov}
 
 		scripts/build $build_opts $extra_conf_opts
-		scripts/check "$@" || :
+		TEST_NPROC=1 scripts/check "$@" || :
 
 		pushd "$WORK_DIR/chrony"
 		report > "$WORK_DIR/coverage/$name.report"

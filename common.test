@@ -67,6 +67,8 @@ check() {
 	if [[ "$1" =~ verbose ]]; then
 		verbose=1
 		nproc=1
+	elif [ -n "$TEST_NPROC" ]; then
+		nproc=$TEST_NPROC
 	else
 		nproc=$(nproc)
 	fi
