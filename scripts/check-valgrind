@@ -2,7 +2,7 @@
 
 set -e
 
-valgrind="valgrind --error-exitcode=129"
+valgrind="valgrind --error-exitcode=129 --vgdb=no"
 leak_opts="--leak-check=full --errors-for-leak-kinds=definite"
 
 leak_exclude_regex="(config)"
