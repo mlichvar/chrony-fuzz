@@ -22,6 +22,8 @@ for build_opts in "gcc-fast gcov"; do
 		rm -rf "$WORK_DIR/coverage/$name"
 		mkdir -p "$WORK_DIR/coverage/$name"
 
+		rm -f "$WORK_DIR/chrony/"*.{gcno,gcda,gcov}
+
 		scripts/build $build_opts $extra_conf_opts
 		scripts/check "$@" || :
 
