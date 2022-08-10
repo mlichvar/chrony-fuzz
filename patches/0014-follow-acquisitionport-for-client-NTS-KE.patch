@@ -1,4 +1,4 @@
-From 8d6b2a12d52f43d26ffbbfdfa045b9dcfde50cba Mon Sep 17 00:00:00 2001
+From e382b468940d0b7849108b6acca0f933f19a625c Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:33 +0200
 Subject: [PATCH 14/19] follow acquisitionport for client NTS-KE
@@ -21,5 +21,5 @@ index c22b0eb1..0e9ee535 100644
  
    /* Make a label containing both the address and name of the server */
 -- 
-2.35.1
+2.36.1
 

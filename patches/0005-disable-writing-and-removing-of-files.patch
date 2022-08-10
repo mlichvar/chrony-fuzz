@@ -1,4 +1,4 @@
-From 6e821bb7b66ac905c595e7a19d547d72537d08b5 Mon Sep 17 00:00:00 2001
+From 6c3c470af3868af2144cbf9558c9c68030b3975b Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:10:01 +0200
 Subject: [PATCH 05/19] disable writing and removing of files
@@ -36,5 +36,5 @@ index c4c89345..61a9e89b 100644
      LOG(LOGS_ERR, "Could not remove %s : %s", path, strerror(errno));
      return 0;
 -- 
-2.35.1
+2.36.1
 

@@ -1,4 +1,4 @@
-From 989fec71c4cad3699aa38a98ed49abfc8a8e6068 Mon Sep 17 00:00:00 2001
+From 9bafba9b0b5fba362ca55d9bd2171f3314071410 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:49:36 +0200
 Subject: [PATCH 17/19] add test bugs
@@ -8,10 +8,10 @@ Subject: [PATCH 17/19] add test bugs
  1 file changed, 55 insertions(+)
 
 diff --git a/main.c b/main.c
-index 7e584adf..45e26883 100644
+index 73cd01a6..95aec768 100644
 --- a/main.c
 +++ b/main.c
-@@ -438,6 +438,58 @@ parse_int_arg(const char *arg)
+@@ -440,6 +440,58 @@ parse_int_arg(const char *arg)
  
  /* ================================================== */
  
@@ -70,7 +70,7 @@ index 7e584adf..45e26883 100644
  extern void PRV_TestPrivOps(FILE *f);
  extern int NIO_TestUdpExtractor(FILE *f);
  
-@@ -490,6 +542,9 @@ int main
+@@ -492,6 +544,9 @@ int main
            break;
        }
        return 0;
@@ -81,5 +81,5 @@ index 7e584adf..45e26883 100644
    }
  
 -- 
-2.35.1
+2.36.1
 

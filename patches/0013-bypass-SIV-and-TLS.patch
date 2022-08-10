@@ -1,4 +1,4 @@
-From 584d458efd8ddc177343010641f2f7766c331581 Mon Sep 17 00:00:00 2001
+From df3e1724a3290d16793748b642d30860bc69b2b4 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:06 +0200
 Subject: [PATCH 13/19] bypass SIV and TLS
@@ -13,17 +13,17 @@ Subject: [PATCH 13/19] bypass SIV and TLS
  6 files changed, 64 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
-index 3bd6ba54..15ac1e40 100755
+index 88f32a48..19eaae8b 100755
 --- a/configure
 +++ b/configure
-@@ -982,7 +982,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
+@@ -987,7 +987,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
        add_def HAVE_SIV
        add_def HAVE_NETTLE_SIV_CMAC
      else
 -      if test_code 'SIV in gnutls' 'gnutls/crypto.h' \
 +      if false && test_code 'SIV in gnutls' 'gnutls/crypto.h' \
          "$test_cflags" "$test_link $LIBS" '
-           return gnutls_aead_cipher_init(NULL, GNUTLS_CIPHER_AES_128_SIV, NULL);'
+           return gnutls_aead_cipher_init((void *)1, GNUTLS_CIPHER_AES_128_SIV, (void *)2);'
        then
 diff --git a/nts_ke_server.c b/nts_ke_server.c
 index ece1b4c0..aa0129ee 100644
@@ -55,7 +55,7 @@ index ece1b4c0..aa0129ee 100644
      return 0;
    }
 diff --git a/nts_ke_session.c b/nts_ke_session.c
-index 96b08c14..bc0cef48 100644
+index dfcd18ab..fc932273 100644
 --- a/nts_ke_session.c
 +++ b/nts_ke_session.c
 @@ -217,6 +217,10 @@ create_tls_session(int server_mode, int sock_fd, const char *server_name,
@@ -81,7 +81,7 @@ index 96b08c14..bc0cef48 100644
    inst->tls_session = NULL;
  
    SCH_RemoveTimeout(inst->timeout_id);
-@@ -313,6 +319,8 @@ check_alpn(NKSN_Instance inst)
+@@ -313,6 +321,8 @@ check_alpn(NKSN_Instance inst)
  {
    gnutls_datum_t alpn;
  
@@ -90,7 +90,7 @@ index 96b08c14..bc0cef48 100644
    if (gnutls_alpn_get_selected_protocol(inst->tls_session, &alpn) < 0 ||
        alpn.size != sizeof (NKE_ALPN_NAME) - 1 ||
        memcmp(alpn.data, NKE_ALPN_NAME, sizeof (NKE_ALPN_NAME) - 1) != 0)
-@@ -390,7 +398,11 @@ handle_event(NKSN_Instance inst, int event)
+@@ -390,7 +400,11 @@ handle_event(NKSN_Instance inst, int event)
        return 0;
  
      case KE_HANDSHAKE:
@@ -102,7 +102,7 @@ index 96b08c14..bc0cef48 100644
  
        if (r < 0) {
          if (gnutls_error_is_fatal(r)) {
-@@ -427,7 +439,7 @@ handle_event(NKSN_Instance inst, int event)
+@@ -427,7 +441,7 @@ handle_event(NKSN_Instance inst, int event)
  
        inst->retry_factor = NKE_RETRY_FACTOR2_TLS;
  
@@ -111,7 +111,7 @@ index 96b08c14..bc0cef48 100644
          char *description = gnutls_session_get_desc(inst->tls_session);
          DEBUG_LOG("Handshake with %s completed %s",
                    inst->label, description ? description : "");
-@@ -448,8 +460,13 @@ handle_event(NKSN_Instance inst, int event)
+@@ -448,8 +462,13 @@ handle_event(NKSN_Instance inst, int event)
        assert(inst->new_message && message->complete);
        assert(message->length <= sizeof (message->data) && message->length > message->sent);
  
@@ -125,7 +125,7 @@ index 96b08c14..bc0cef48 100644
  
        if (r < 0) {
          if (gnutls_error_is_fatal(r)) {
-@@ -480,8 +497,13 @@ handle_event(NKSN_Instance inst, int event)
+@@ -480,8 +499,13 @@ handle_event(NKSN_Instance inst, int event)
            return 0;
          }
  
@@ -139,7 +139,7 @@ index 96b08c14..bc0cef48 100644
  
          if (r < 0) {
            /* Handle a renegotiation request on both client and server as
-@@ -499,7 +521,11 @@ handle_event(NKSN_Instance inst, int event)
+@@ -499,7 +523,11 @@ handle_event(NKSN_Instance inst, int event)
  
          message->length += r;
  
@@ -151,7 +151,7 @@ index 96b08c14..bc0cef48 100644
  
        if (!check_message_format(message, r == 0)) {
          LOG(inst->server ? LOGS_DEBUG : LOGS_ERR,
-@@ -519,7 +545,11 @@ handle_event(NKSN_Instance inst, int event)
+@@ -519,7 +547,11 @@ handle_event(NKSN_Instance inst, int event)
        return 1;
  
      case KE_SHUTDOWN:
@@ -163,15 +163,15 @@ index 96b08c14..bc0cef48 100644
  
        if (r < 0) {
          if (gnutls_error_is_fatal(r)) {
-@@ -598,6 +628,7 @@ static void
+@@ -598,6 +630,7 @@ static int
  init_gnutls(void)
  {
    int r;
 +  assert(0);
  
    if (gnutls_initialised)
-     return;
-@@ -628,6 +659,7 @@ init_gnutls(void)
+     return 1;
+@@ -634,6 +667,7 @@ init_gnutls(void)
  static void
  deinit_gnutls(void)
  {
@@ -179,16 +179,16 @@ index 96b08c14..bc0cef48 100644
    if (!gnutls_initialised || credentials_counter > 0)
      return;
  
-@@ -649,6 +681,8 @@ create_credentials(const char **certs, const char **keys, int n_certs_keys,
+@@ -655,6 +689,8 @@ create_credentials(const char **certs, const char **keys, int n_certs_keys,
    gnutls_certificate_credentials_t credentials = NULL;
    int i, r;
  
 +  return malloc(1);
 +
-   init_gnutls();
+   if (!init_gnutls())
+     return NULL;
  
-   r = gnutls_certificate_allocate_credentials(&credentials);
-@@ -730,9 +764,13 @@ NKSN_CreateClientCertCredentials(const char **certs, uint32_t *ids,
+@@ -737,9 +773,13 @@ NKSN_CreateClientCertCredentials(const char **certs, uint32_t *ids,
  void
  NKSN_DestroyCertCredentials(NKSN_Credentials credentials)
  {
@@ -202,7 +202,7 @@ index 96b08c14..bc0cef48 100644
  }
  
  /* ================================================== */
-@@ -877,6 +915,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
+@@ -884,6 +924,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
      return 0;
    }
  
@@ -210,7 +210,7 @@ index 96b08c14..bc0cef48 100644
    if (gnutls_prf_rfc5705(inst->tls_session,
                           sizeof (NKE_EXPORTER_LABEL) - 1, NKE_EXPORTER_LABEL,
                           sizeof (NKE_EXPORTER_CONTEXT_C2S) - 1, NKE_EXPORTER_CONTEXT_C2S,
-@@ -888,6 +927,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
+@@ -895,6 +936,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
      DEBUG_LOG("Could not export key");
      return 0;
    }
@@ -283,5 +283,5 @@ index d8f8b23e..c7616329 100644
    return 1;
  }
 -- 
-2.35.1
+2.36.1
 

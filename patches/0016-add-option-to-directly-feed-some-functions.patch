@@ -1,4 +1,4 @@
-From e11bd94d3e0b39cd5bbdc63e6764d61c95322ee8 Mon Sep 17 00:00:00 2001
+From de78f6154479b1e4d06b851adfb3c1d637a6539d Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:47:12 +0200
 Subject: [PATCH 16/19] add option to directly feed some functions
@@ -11,10 +11,10 @@ Subject: [PATCH 16/19] add option to directly feed some functions
  4 files changed, 63 insertions(+), 22 deletions(-)
 
 diff --git a/configure b/configure
-index 15ac1e40..f55ed4dd 100755
+index 19eaae8b..1c1a58d0 100755
 --- a/configure
 +++ b/configure
-@@ -808,6 +808,8 @@ then
+@@ -813,6 +813,8 @@ then
    EXTRA_LIBS="$EXTRA_LIBS -lseccomp"
  fi
  
@@ -24,10 +24,10 @@ index 15ac1e40..f55ed4dd 100755
    EXTRA_OBJECTS="$EXTRA_OBJECTS privops.o"
    add_def PRIVOPS_HELPER
 diff --git a/main.c b/main.c
-index 5dc9ebaf..7e584adf 100644
+index 538ee6b4..73cd01a6 100644
 --- a/main.c
 +++ b/main.c
-@@ -438,6 +438,9 @@ parse_int_arg(const char *arg)
+@@ -440,6 +440,9 @@ parse_int_arg(const char *arg)
  
  /* ================================================== */
  
@@ -37,7 +37,7 @@ index 5dc9ebaf..7e584adf 100644
  int main
  (int argc, char **argv)
  {
-@@ -468,6 +471,25 @@ int main
+@@ -470,6 +473,25 @@ int main
      } else if (!strcmp("--version", argv[optind])) {
        print_version();
        return 0;
@@ -64,10 +64,10 @@ index 5dc9ebaf..7e584adf 100644
    }
  
 diff --git a/ntp_io_linux.c b/ntp_io_linux.c
-index 4d099cc9..b19ec9a7 100644
+index 2c94fb75..607f2568 100644
 --- a/ntp_io_linux.c
 +++ b/ntp_io_linux.c
-@@ -734,6 +734,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
+@@ -735,6 +735,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
  
  /* ================================================== */
  
@@ -238,5 +238,5 @@ index 3fb5cbd5..0f213606 100644
  
  /* ======================================================================= */
 -- 
-2.35.1
+2.36.1
 

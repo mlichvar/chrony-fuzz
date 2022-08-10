@@ -1,4 +1,4 @@
-From 226eae76dca15f9f35f3b5c1a883eb2b4f301229 Mon Sep 17 00:00:00 2001
+From afca7b2c180b565e2675bd8b30fbfee7378a26ed Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:25:35 +0200
 Subject: [PATCH 09/19] simplify protocol checks
@@ -12,10 +12,10 @@ Subject: [PATCH 09/19] simplify protocol checks
  5 files changed, 16 insertions(+), 6 deletions(-)
 
 diff --git a/client.c b/client.c
-index a2c780fd..ed1835d5 100644
+index 60819c29..9201b76d 100644
 --- a/client.c
 +++ b/client.c
-@@ -1313,7 +1313,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
+@@ -1315,7 +1315,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
              reply->res1 != 0 ||
              reply->res2 != 0 ||
              reply->command != request->command ||
@@ -38,10 +38,10 @@ index cc1131cf..ebc8dcf7 100644
  
  /* ================================================== */
 diff --git a/ntp_core.c b/ntp_core.c
-index b73309ed..3f89ce5c 100644
+index 141fe4f0..5a1494b1 100644
 --- a/ntp_core.c
 +++ b/ntp_core.c
-@@ -1752,6 +1752,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1793,6 +1793,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
    /* Test 1 checks for duplicate packet */
    test1 = UTI_CompareNtp64(&message->receive_ts, &inst->remote_ntp_rx) ||
            UTI_CompareNtp64(&message->transmit_ts, &inst->remote_ntp_tx);
@@ -49,7 +49,7 @@ index b73309ed..3f89ce5c 100644
  
    /* Test 2 checks for bogus packet in the basic and interleaved modes.  This
       ensures the source is responding to the latest packet we sent to it. */
-@@ -1760,18 +1761,22 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1801,18 +1802,22 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
             !UTI_CompareNtp64(&message->originate_ts, &inst->local_ntp_rx);
    test2 = test2n || test2i;
    interleaved_packet = !test2n && test2i;
@@ -72,7 +72,7 @@ index b73309ed..3f89ce5c 100644
  
    /* Test 6 checks for unsynchronised server */
    test6 = pkt_leap != LEAP_Unsynchronised &&
-@@ -1791,7 +1796,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1832,7 +1837,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
    kod_rate = 0;
    if (test1 && test2 && test5 && pkt_leap == LEAP_Unsynchronised &&
        message->stratum == NTP_INVALID_STRATUM) {
@@ -81,7 +81,7 @@ index b73309ed..3f89ce5c 100644
        kod_rate = 1;
    }
  
-@@ -2409,6 +2414,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
+@@ -2467,6 +2472,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
      local_ntp_rx = &ntp_rx;
      UTI_ZeroTimespec(&local_tx.ts);
      interleaved = CLG_GetNtpTxTimestamp(&ntp_rx, &local_tx.ts);
@@ -143,5 +143,5 @@ index 34412a62..0f812be8 100644
        inst->nak_response = 1;
        return 0;
 -- 
-2.35.1
+2.36.1
 

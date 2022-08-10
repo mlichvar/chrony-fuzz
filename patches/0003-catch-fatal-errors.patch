@@ -1,4 +1,4 @@
-From 117c17dcf704c9278384bf2c43a23ff9a01a4685 Mon Sep 17 00:00:00 2001
+From 205447406ddd72d5b3d0f66cc252aa65731b54b9 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:49:21 +0200
 Subject: [PATCH 03/19] catch fatal errors
@@ -22,5 +22,5 @@ index d858d2ad..16302577 100644
        break;
      default:
 -- 
-2.35.1
+2.36.1
 

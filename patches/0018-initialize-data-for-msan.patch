@@ -1,4 +1,4 @@
-From cb7cea10289d828da2ceaf2b806d408363e550d7 Mon Sep 17 00:00:00 2001
+From 0f62dc705578ad0d6516cc65c5e28a8ffa21110e Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:45:46 +0200
 Subject: [PATCH 18/19] initialize data for msan
@@ -109,5 +109,5 @@ index 22c058c6..e3b9f992 100644
  
  /* ================================================== */
 -- 
-2.35.1
+2.36.1
 

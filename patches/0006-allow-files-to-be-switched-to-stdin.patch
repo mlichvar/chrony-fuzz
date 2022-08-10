@@ -1,4 +1,4 @@
-From e2baec89b1e224c1d2f30aca1e6a1572f23f8993 Mon Sep 17 00:00:00 2001
+From 68100c00646a3142b5df5d4afb2af06966f12f54 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:16:39 +0200
 Subject: [PATCH 06/19] allow files to be switched to stdin
@@ -34,5 +34,5 @@ index 61a9e89b..8681a32c 100644
      case 'r':
      case 'R':
 -- 
-2.35.1
+2.36.1
 
