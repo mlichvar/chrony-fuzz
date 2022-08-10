@@ -6,11 +6,11 @@ Subject: [PATCH 13/19] bypass SIV and TLS
 ---
  configure        |  2 +-
  nts_ke_server.c  |  4 +++-
- nts_ke_session.c | 45 ++++++++++++++++++++++++++++++++++++++++++++-
+ nts_ke_session.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++-
  nts_ntp_client.c |  1 +
  nts_ntp_server.c |  1 +
  siv_nettle.c     | 12 ++++++++++++
- 6 files changed, 62 insertions(+), 3 deletions(-)
+ 6 files changed, 64 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
 index 3bd6ba54..15ac1e40 100755
@@ -69,12 +69,14 @@ index 96b08c14..bc0cef48 100644
    r = gnutls_init(&session, GNUTLS_NONBLOCK | GNUTLS_NO_TICKETS |
                    (server_mode ? GNUTLS_SERVER : GNUTLS_CLIENT));
    if (r < 0) {
-@@ -286,7 +290,9 @@ stop_session(NKSN_Instance inst)
+@@ -286,7 +290,11 @@ stop_session(NKSN_Instance inst)
    Free(inst->label);
    inst->label = NULL;
  
 +#if 0
    gnutls_deinit(inst->tls_session);
++#else
++  Free(inst->tls_session);
 +#endif
    inst->tls_session = NULL;
  
