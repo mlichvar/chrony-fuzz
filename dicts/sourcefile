@@ -11,6 +11,7 @@
 "key"
 "maxdelay"
 "maxdelaydevratio"
+"maxdelayquant"
 "maxdelayratio"
 "maxpoll"
 "maxsamples"
