@@ -2,6 +2,8 @@
 
 set -e
 
+unset DEBUGINFOD_URLS
+
 valgrind="valgrind --error-exitcode=129 --vgdb=no"
 leak_opts="--leak-check=full --errors-for-leak-kinds=definite"
 
