@@ -4,9 +4,9 @@
 
 export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=123
 
-run_test chronyd -d -d -t 100 \
+run_test chronyd -d -d -t 200 \
 	'acquisitionport 123' \
 	'allow' \
 	'keyfile data/chrony.keys' \
 	'makestep 10 2' \
-	'server 192.168.123.2 iburst extfield F323 xleave'
+	'server 192.168.123.2 iburst extfield F323 xleave maxdelayratio 10'
