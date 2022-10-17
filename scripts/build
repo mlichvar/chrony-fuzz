@@ -17,6 +17,7 @@ san=$2
 shift 2
 extra_conf_opts=$*
 cflags="-O2 -Wall -g $EXTRA_CFLAGS"
+ldflags="$EXTRA_LDFLAGS"
 
 pushd "$WORK_DIR"
 
@@ -61,7 +62,7 @@ cflags+=" -fsanitize=float-cast-overflow -fno-sanitize-recover=all"
 echo "Building chrony: $(basename "$chrony_cc") $san $extra_conf_opts"
 
 if [ -z "$NO_CLEAN" ]; then
-	CC=$chrony_cc CFLAGS="$cflags" LDFLAGS="$(pwd)/../clknetsim/clknetsim.so" \
+	CC=$chrony_cc CFLAGS="$cflags" LDFLAGS="$ldflags $(pwd)/../clknetsim/clknetsim.so" \
 	./configure \
 		--enable-debug \
 		--enable-ntp-signd \
