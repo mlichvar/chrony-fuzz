@@ -2,7 +2,7 @@
 
 set -e
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 1 ] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
 	echo "$0 TIMEOUT [test]..."
 	exit 1
 fi
