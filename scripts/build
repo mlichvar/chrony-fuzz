@@ -64,7 +64,7 @@ echo "Building chrony: $(basename "$chrony_cc") $san $extra_conf_opts"
 if [ -z "$NO_CLEAN" ]; then
 	CC=$chrony_cc CFLAGS="$cflags" LDFLAGS="$ldflags $(pwd)/../clknetsim/clknetsim.so" \
 	./configure \
-		--enable-debug \
+		$([ -z "$NO_DEBUG" ] && echo "--enable-debug") \
 		--enable-ntp-signd \
 		--disable-asyncdns \
 		--with-ntp-era="$(date -u -d 'Jan 1 1960' +'%s')" \
