@@ -5,12 +5,17 @@ import struct
 import sys
 
 if len(sys.argv) < 3:
-    print("Usage: {} cmd-resp pcap...".format(sys.argv[0]), file=sys.stderr)
+    print("Usage: {} [-s] pcap...".format(sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
-mode = sys.argv[1]
+args = sys.argv[1:]
+single = False
 
-for f in sys.argv[2:]:
+if args[0] == "-s":
+    single = True
+    args = args[1:]
+
+for f in args:
     cap = pcapy.open_offline(f)
 
     while True:
@@ -24,12 +29,11 @@ for f in sys.argv[2:]:
             print("Unsupported datalink type")
             sys.exit(2)
 
-        if mode == "cmd-resp":
-            udp_payload[19] |= 1
-        else:
-            print("Unknown mode", file=sys.stderr)
-
         print(len(udp_payload), file=sys.stderr)
 
-        hdr = struct.pack("!H", len(udp_payload))
-        sys.stdout.buffer.write(hdr + udp_payload)
+        if single:
+            sys.stdout.buffer.write(udp_payload)
+            sys.exit(0)
+        else:
+            hdr = struct.pack("!H", len(udp_payload))
+            sys.stdout.buffer.write(hdr + udp_payload)
