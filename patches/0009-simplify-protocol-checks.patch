@@ -1,18 +1,19 @@
-From afca7b2c180b565e2675bd8b30fbfee7378a26ed Mon Sep 17 00:00:00 2001
+From ea868dc641e7e42c823647bd6d9fc25178d77908 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:25:35 +0200
 Subject: [PATCH 09/19] simplify protocol checks
 
 ---
- client.c         | 2 +-
- keys.c           | 2 +-
- ntp_core.c       | 8 +++++++-
- ntp_io.c         | 3 +++
- nts_ntp_client.c | 7 ++++---
- 5 files changed, 16 insertions(+), 6 deletions(-)
+ client.c         |  2 +-
+ cmdmon.c         |  2 +-
+ keys.c           |  2 +-
+ ntp_core.c       | 16 ++++++++++++++--
+ ntp_io.c         |  3 +++
+ nts_ntp_client.c |  7 ++++---
+ 6 files changed, 24 insertions(+), 8 deletions(-)
 
 diff --git a/client.c b/client.c
-index 60819c29..9201b76d 100644
+index 0a7bcc86..9b458ca7 100644
 --- a/client.c
 +++ b/client.c
 @@ -1315,7 +1315,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
@@ -24,6 +25,19 @@ index 60819c29..9201b76d 100644
            DEBUG_LOG("Invalid reply");
            continue;
          }
+diff --git a/cmdmon.c b/cmdmon.c
+index e48a2fc1..fbba16c0 100644
+--- a/cmdmon.c
++++ b/cmdmon.c
+@@ -1454,7 +1454,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
+   tx_message.command = rx_message.command;
+   tx_message.reply = htons(RPY_NULL);
+   tx_message.status = htons(STT_SUCCESS);
+-  tx_message.sequence = rx_message.sequence;
++  tx_message.sequence = rx_message.sequence | htonl(1);
+ 
+   if (rx_message.version != PROTO_VERSION_NUMBER) {
+     DEBUG_LOG("Command packet has invalid version (%d != %d)",
 diff --git a/keys.c b/keys.c
 index cc1131cf..ebc8dcf7 100644
 --- a/keys.c
@@ -38,50 +52,72 @@ index cc1131cf..ebc8dcf7 100644
  
  /* ================================================== */
 diff --git a/ntp_core.c b/ntp_core.c
-index 141fe4f0..5a1494b1 100644
+index 63c5a3a2..8afbd697 100644
 --- a/ntp_core.c
 +++ b/ntp_core.c
-@@ -1793,6 +1793,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1147,7 +1147,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+   message.precision = precision;
+   message.root_delay = UTI_DoubleToNtp32(our_root_delay);
+   message.root_dispersion = UTI_DoubleToNtp32(our_root_dispersion);
+-  message.reference_id = htonl(our_ref_id);
++  message.reference_id = htonl(our_ref_id | 1);
+ 
+   /* Now fill in timestamps */
+ 
+@@ -1222,6 +1222,12 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+     message.receive_ts.lo |= htonl(1);
+     message.transmit_ts.lo &= ~htonl(1);
+   }
++  if (my_mode != MODE_CLIENT)
++    message.originate_ts.lo |= htonl(60);
++  if (interleaved)
++    message.originate_ts.lo |= htonl(2);
++  else
++    message.originate_ts.lo &= ~htonl(2);
+ 
+   /* Generate the authentication data */
+   if (auth) {
+@@ -1805,6 +1811,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
    /* Test 1 checks for duplicate packet */
    test1 = UTI_CompareNtp64(&message->receive_ts, &inst->remote_ntp_rx) ||
            UTI_CompareNtp64(&message->transmit_ts, &inst->remote_ntp_tx);
-+  test1 = !!(message->originate_ts.lo & htonl(1));
++  test1 = !!(message->originate_ts.lo & htonl(4));
  
    /* Test 2 checks for bogus packet in the basic and interleaved modes.  This
       ensures the source is responding to the latest packet we sent to it. */
-@@ -1801,18 +1802,22 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1813,18 +1820,22 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
             !UTI_CompareNtp64(&message->originate_ts, &inst->local_ntp_rx);
    test2 = test2n || test2i;
    interleaved_packet = !test2n && test2i;
-+  test2 = !!(message->originate_ts.lo & htonl(2));
-+  interleaved_packet = !!(message->originate_ts.lo & htonl(4));
++  test2 = !!(message->originate_ts.lo & htonl(8));
++  interleaved_packet = !!(message->originate_ts.lo & htonl(2));
    
    /* Test 3 checks for invalid timestamps.  This can happen when the
       association if not properly 'up'. */
    test3 = !UTI_IsZeroNtp64(&message->originate_ts) &&
            !UTI_IsZeroNtp64(&message->receive_ts) &&
            !UTI_IsZeroNtp64(&message->transmit_ts);
-+  test3 = !!(message->originate_ts.lo & htonl(8));
++  test3 = !!(message->originate_ts.lo & htonl(16));
  
    /* Test 4 would check for denied access.  It would always pass as this
       function is called only for known sources. */
  
    /* Test 5 checks for authentication failure */
    test5 = NAU_CheckResponseAuth(inst->auth, message, info);
-+  test5 = !!(message->originate_ts.lo & htonl(16));
++  test5 = !!(message->originate_ts.lo & htonl(32));
  
    /* Test 6 checks for unsynchronised server */
    test6 = pkt_leap != LEAP_Unsynchronised &&
-@@ -1832,7 +1837,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
+@@ -1844,7 +1855,7 @@ process_response(NCR_Instance inst, NTP_Local_Address *local_addr,
    kod_rate = 0;
    if (test1 && test2 && test5 && pkt_leap == LEAP_Unsynchronised &&
        message->stratum == NTP_INVALID_STRATUM) {
 -    if (pkt_refid == KOD_RATE)
-+    if (pkt_refid == KOD_RATE || message->originate_ts.lo & htonl(32))
++    if (pkt_refid == KOD_RATE || !(pkt_refid & 1))
        kod_rate = 1;
    }
  
-@@ -2467,6 +2472,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
+@@ -2479,6 +2490,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
      local_ntp_rx = &ntp_rx;
      UTI_ZeroTimespec(&local_tx.ts);
      interleaved = CLG_GetNtpTxTimestamp(&ntp_rx, &local_tx.ts);
@@ -104,7 +140,7 @@ index 86e3f26c..c9fcc5a9 100644
        ntohs(msg->header.length) != message->length ||
        msg->header.domain != PTP_DOMAIN_NTP ||
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
-index 34412a62..0f812be8 100644
+index 34412a62..c5dc9dbc 100644
 --- a/nts_ntp_client.c
 +++ b/nts_ntp_client.c
 @@ -293,6 +293,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
@@ -138,10 +174,10 @@ index 34412a62..0f812be8 100644
    if (!has_valid_uniq_id || !has_valid_auth) {
      if (has_valid_uniq_id && packet->stratum == NTP_INVALID_STRATUM &&
 -        ntohl(packet->reference_id) == NTP_KOD_NTS_NAK) {
-+        ntohl(packet->reference_id) & 1) {
++        !(ntohl(packet->reference_id) & 1)) {
        DEBUG_LOG("NTS NAK");
        inst->nak_response = 1;
        return 0;
 -- 
-2.36.1
+2.37.3
 

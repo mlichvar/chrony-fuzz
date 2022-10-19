@@ -1,4 +1,4 @@
-From f15d5ed16b25aefd764bacbd2371daf3bb0f597b Mon Sep 17 00:00:00 2001
+From 73f0177c4b8258fb543a759b7924f6c24573b531 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:54:22 +0200
 Subject: [PATCH 15/19] avoid undefined behavior in getdate
@@ -21,5 +21,5 @@ index f87875c6..375fb39c 100644
  	  if (sign < 0)
  	    yylval.Number = -yylval.Number;
 -- 
-2.36.1
+2.37.3
 

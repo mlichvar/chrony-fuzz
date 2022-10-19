@@ -1,31 +1,33 @@
-From 6c3c470af3868af2144cbf9558c9c68030b3975b Mon Sep 17 00:00:00 2001
+From 608f2299f5fe5839c65799f004224bf9532bfeb8 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:10:01 +0200
 Subject: [PATCH 05/19] disable writing and removing of files
 
 ---
- util.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ util.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/util.c b/util.c
-index c4c89345..61a9e89b 100644
+index c4c89345..462db851 100644
 --- a/util.c
 +++ b/util.c
-@@ -1279,11 +1279,13 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1279,11 +1279,15 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
        break;
      case 'w':
      case 'W':
-+      return NULL;
++      if (!getenv("TEST_ENABLE_WRITE"))
++        return NULL;
        flags = O_WRONLY | O_CREAT | O_EXCL;
        file_mode = "w";
        break;
      case 'a':
      case 'A':
-+      return NULL;
++      if (!getenv("TEST_ENABLE_WRITE"))
++        return NULL;
        flags = O_WRONLY | O_CREAT | O_APPEND | O_NOFOLLOW;
        file_mode = "a";
        break;
-@@ -1368,6 +1370,9 @@ UTI_RemoveFile(const char *basedir, const char *name, const char *suffix)
+@@ -1368,6 +1372,9 @@ UTI_RemoveFile(const char *basedir, const char *name, const char *suffix)
      return 0;
    }
  
@@ -36,5 +38,5 @@ index c4c89345..61a9e89b 100644
      LOG(LOGS_ERR, "Could not remove %s : %s", path, strerror(errno));
      return 0;
 -- 
-2.36.1
+2.37.3
 

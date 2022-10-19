@@ -1,4 +1,4 @@
-From de78f6154479b1e4d06b851adfb3c1d637a6539d Mon Sep 17 00:00:00 2001
+From da26ea192501c9637ad09a92800d8ca50501a453 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:47:12 +0200
 Subject: [PATCH 16/19] add option to directly feed some functions
@@ -11,7 +11,7 @@ Subject: [PATCH 16/19] add option to directly feed some functions
  4 files changed, 63 insertions(+), 22 deletions(-)
 
 diff --git a/configure b/configure
-index 19eaae8b..1c1a58d0 100755
+index c3ff53d4..15d46fdb 100755
 --- a/configure
 +++ b/configure
 @@ -813,6 +813,8 @@ then
@@ -64,7 +64,7 @@ index 538ee6b4..73cd01a6 100644
    }
  
 diff --git a/ntp_io_linux.c b/ntp_io_linux.c
-index 2c94fb75..607f2568 100644
+index 004a4d49..14cd242d 100644
 --- a/ntp_io_linux.c
 +++ b/ntp_io_linux.c
 @@ -735,6 +735,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
@@ -238,5 +238,5 @@ index 3fb5cbd5..0f213606 100644
  
  /* ======================================================================= */
 -- 
-2.36.1
+2.37.3
 

@@ -1,4 +1,4 @@
-From 39ead179318afc714167774e82855a8cc5980d6d Mon Sep 17 00:00:00 2001
+From 8547256e42f810ba0f84e4cc75721715a11dabd0 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:54:03 +0200
 Subject: [PATCH 12/19] bypass signd
@@ -39,5 +39,5 @@ index 77b3249a..e63cd62e 100644
      if (s < 0) {
        close_socket();
 -- 
-2.36.1
+2.37.3
 

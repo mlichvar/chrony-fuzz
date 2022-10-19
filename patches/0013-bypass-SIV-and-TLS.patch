@@ -1,56 +1,65 @@
-From df3e1724a3290d16793748b642d30860bc69b2b4 Mon Sep 17 00:00:00 2001
+From eb177dd70929d5e0f6f43cefe8ff361db4307b96 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:06 +0200
 Subject: [PATCH 13/19] bypass SIV and TLS
 
 ---
  configure        |  2 +-
- nts_ke_server.c  |  4 +++-
+ nts_ke_server.c  |  6 ++++--
  nts_ke_session.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++-
  nts_ntp_client.c |  1 +
  nts_ntp_server.c |  1 +
- siv_nettle.c     | 12 ++++++++++++
- 6 files changed, 64 insertions(+), 3 deletions(-)
+ siv_nettle.c     | 11 +++++++++++
+ 6 files changed, 64 insertions(+), 4 deletions(-)
 
 diff --git a/configure b/configure
-index 88f32a48..19eaae8b 100755
+index f3966e93..c3ff53d4 100755
 --- a/configure
 +++ b/configure
-@@ -987,7 +987,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
-       add_def HAVE_SIV
-       add_def HAVE_NETTLE_SIV_CMAC
+@@ -994,7 +994,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
+         add_def HAVE_NETTLE_SIV_GCM
+       fi
      else
--      if test_code 'SIV in gnutls' 'gnutls/crypto.h' \
-+      if false && test_code 'SIV in gnutls' 'gnutls/crypto.h' \
+-      if test_code 'AES-SIV-CMAC in gnutls' 'gnutls/crypto.h' \
++      if false && test_code 'AES-SIV-CMAC in gnutls' 'gnutls/crypto.h' \
          "$test_cflags" "$test_link $LIBS" '
            return gnutls_aead_cipher_init((void *)1, GNUTLS_CIPHER_AES_128_SIV, (void *)2);'
        then
 diff --git a/nts_ke_server.c b/nts_ke_server.c
-index ece1b4c0..aa0129ee 100644
+index 37310797..936a2fa1 100644
 --- a/nts_ke_server.c
 +++ b/nts_ke_server.c
-@@ -490,6 +490,7 @@ generate_key(int index)
+@@ -502,7 +502,7 @@ generate_key(int index)
+      with cookies encrypted with those keys will not work if the new algorithm
+      produces longer cookies (i.e. response would be longer than request).
+      Switching from AES-SIV-CMAC-256 to AES-128-GCM-SIV is ok. */
+-  algorithm = SIV_GetKeyLength(AEAD_AES_128_GCM_SIV) > 0 ?
++  algorithm = index % 2 && SIV_GetKeyLength(AEAD_AES_128_GCM_SIV) > 0 ?
+               AEAD_AES_128_GCM_SIV : AEAD_AES_SIV_CMAC_256;
+ 
+   key = &server_keys[index];
+@@ -517,6 +517,7 @@ generate_key(int index)
    /* Encode the index in the lowest bits of the ID */
-   server_keys[index].id &= -1U << KEY_ID_INDEX_BITS;
-   server_keys[index].id |= index;
-+  server_keys[index].id &= ~1U;
+   key->id &= -1U << KEY_ID_INDEX_BITS;
+   key->id |= index;
++  key->id &= ~MAX_SERVER_KEYS;
  
-   DEBUG_LOG("Generated server key %"PRIX32, server_keys[index].id);
+   update_key_siv(key, algorithm);
  
-@@ -880,6 +881,7 @@ NKS_GenerateCookie(NKE_Context *context, NKE_Cookie *cookie)
- 
-   header->key_id = htonl(key->id);
-   UTI_GetRandomBytes(header->nonce, sizeof (header->nonce));
-+  header->nonce[0] &= ~1;
+@@ -924,6 +925,7 @@ NKS_GenerateCookie(NKE_Context *context, NKE_Cookie *cookie)
+   if (key->nonce_length > sizeof (cookie->cookie) - sizeof (*header))
+     assert(0);
+   UTI_GetRandomBytes(nonce, key->nonce_length);
++  nonce[0] &= ~1;
  
    plaintext_length = context->c2s.length + context->s2c.length;
    assert(plaintext_length <= sizeof (plaintext));
-@@ -929,7 +931,7 @@ NKS_DecodeCookie(NKE_Cookie *cookie, NKE_Context *context)
+@@ -971,7 +973,7 @@ NKS_DecodeCookie(NKE_Cookie *cookie, NKE_Context *context)
  
    key_id = ntohl(header->key_id);
    key = &server_keys[key_id % MAX_SERVER_KEYS];
 -  if (key_id != key->id) {
-+  if (key_id & 1) {
++  if (key_id & MAX_SERVER_KEYS) {
      DEBUG_LOG("Unknown key %"PRIX32, key_id);
      return 0;
    }
@@ -222,7 +231,7 @@ index dfcd18ab..fc932273 100644
    c2s->length = length;
    s2c->length = length;
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
-index 0f812be8..49ca642a 100644
+index c5dc9dbc..33d718a8 100644
 --- a/nts_ntp_client.c
 +++ b/nts_ntp_client.c
 @@ -295,6 +295,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
@@ -234,10 +243,10 @@ index 0f812be8..49ca642a 100644
    /* Get new cookies if there are not any, or they are no longer usable */
    if (!check_cookies(inst)) {
 diff --git a/nts_ntp_server.c b/nts_ntp_server.c
-index 9226c895..0ca80b6b 100644
+index 7db39985..373f4d8a 100644
 --- a/nts_ntp_server.c
 +++ b/nts_ntp_server.c
-@@ -208,6 +208,7 @@ NNS_CheckRequestAuth(NTP_Packet *packet, NTP_PacketInfo *info, uint32_t *kod)
+@@ -231,6 +231,7 @@ NNS_CheckRequestAuth(NTP_Packet *packet, NTP_PacketInfo *info, uint32_t *kod)
       there (when the TX timestamp is already set) */
  
    UTI_GetRandomBytes(server->nonce, sizeof (server->nonce));
@@ -246,36 +255,42 @@ index 9226c895..0ca80b6b 100644
    assert(sizeof (server->cookies) / sizeof (server->cookies[0]) == NTS_MAX_COOKIES);
    for (i = 0; i < NTS_MAX_COOKIES && i < requested_cookies; i++)
 diff --git a/siv_nettle.c b/siv_nettle.c
-index d8f8b23e..c7616329 100644
+index 800beb71..88fd3fcb 100644
 --- a/siv_nettle.c
 +++ b/siv_nettle.c
-@@ -122,9 +122,15 @@ SIV_Encrypt(SIV_Instance instance,
+@@ -188,6 +188,7 @@ SIV_Encrypt(SIV_Instance instance,
  
    assert(assoc && plaintext);
  
 +#if 0
-   siv_cmac_aes128_encrypt_message(&instance->siv, nonce_length, nonce,
-                                   assoc_length, assoc,
-                                   ciphertext_length, ciphertext, plaintext);
+   switch (instance->algorithm) {
+     case AEAD_AES_SIV_CMAC_256:
+       siv_cmac_aes128_encrypt_message(&instance->ctx.cmac_aes128,
+@@ -204,6 +205,10 @@ SIV_Encrypt(SIV_Instance instance,
+     default:
+       assert(0);
+   }
 +#else
 +  memcpy(ciphertext, plaintext, plaintext_length);
 +  memset(ciphertext + plaintext_length, 0, ciphertext_length - plaintext_length);
 +#endif
-+
+ 
    return 1;
  }
- 
-@@ -147,10 +153,16 @@ SIV_Decrypt(SIV_Instance instance,
+@@ -228,6 +233,7 @@ SIV_Decrypt(SIV_Instance instance,
  
    assert(assoc && plaintext);
  
 +#if 0
-   if (!siv_cmac_aes128_decrypt_message(&instance->siv, nonce_length, nonce,
-                                        assoc_length, assoc,
-                                        plaintext_length, plaintext, ciphertext))
-     return 0;
+   switch (instance->algorithm) {
+     case AEAD_AES_SIV_CMAC_256:
+       if (!siv_cmac_aes128_decrypt_message(&instance->ctx.cmac_aes128,
+@@ -246,6 +252,11 @@ SIV_Decrypt(SIV_Instance instance,
+     default:
+       assert(0);
+   }
 +#else
-+  if (nonce[0] & 1)
++  if (nonce[0] & 1 || ciphertext[plaintext_length] & 1)
 +    return 0;
 +  memcpy(plaintext, ciphertext, plaintext_length);
 +#endif
@@ -283,5 +298,5 @@ index d8f8b23e..c7616329 100644
    return 1;
  }
 -- 
-2.36.1
+2.37.3
 

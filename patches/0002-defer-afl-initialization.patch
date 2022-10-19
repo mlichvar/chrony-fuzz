@@ -1,4 +1,4 @@
-From 5268d2afbd3a2aabc23075623614f2beded56ff9 Mon Sep 17 00:00:00 2001
+From bc0d231335f0e713005ca88e17d764bf9139ac8d Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:48:12 +0200
 Subject: [PATCH 02/19] defer afl initialization
@@ -36,5 +36,5 @@ index c40b5e4b..e738236d 100644
    initialised = 1;
  
 -- 
-2.36.1
+2.37.3
 

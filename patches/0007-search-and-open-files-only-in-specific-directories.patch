@@ -1,7 +1,7 @@
-From 7c589756fca436087670416360e46fa87b76644f Mon Sep 17 00:00:00 2001
+From cceef3a49e2d08a4c7f920a80be9ff4815f1f7f9 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:49:59 +0200
-Subject: [PATCH 07/19] search and open files only in data directory
+Subject: [PATCH 07/19] search and open files only in specific directories
 
 ---
  conf.c | 13 +++++++++++++
@@ -47,15 +47,15 @@ index 8dd27436..9c8ea6e8 100644
  #ifdef GLOB_NOMAGIC
                  GLOB_NOMAGIC |
 diff --git a/util.c b/util.c
-index 8681a32c..22c058c6 100644
+index 3a9b00d0..ffa80c9e 100644
 --- a/util.c
 +++ b/util.c
 @@ -1269,6 +1269,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
    if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
      return NULL;
  
-+  if (!(strncmp(path, "data/", 5) == 0 && !strstr(path, "..")) &&
-+      strcmp(path, "/dev/urandom") != 0) {
++  if (!((strncmp(path, "data/", 5) == 0 || strncmp(path, "tmp/", 4) == 0) &&
++        !strstr(path, "..")) && strcmp(path, "/dev/urandom") != 0) {
 +    LOG(severity, "Refused to open %s", path);
 +    return NULL;
 +  }
@@ -64,5 +64,5 @@ index 8681a32c..22c058c6 100644
    if (env && strcmp(env, path) == 0) {
      DEBUG_LOG("Opened %s as stdin", path);
 -- 
-2.36.1
+2.37.3
 

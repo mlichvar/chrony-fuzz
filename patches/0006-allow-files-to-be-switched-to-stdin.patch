@@ -1,4 +1,4 @@
-From 68100c00646a3142b5df5d4afb2af06966f12f54 Mon Sep 17 00:00:00 2001
+From 98aa116e5caecc40e41c463393d687c39e85d006 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:16:39 +0200
 Subject: [PATCH 06/19] allow files to be switched to stdin
@@ -8,7 +8,7 @@ Subject: [PATCH 06/19] allow files to be switched to stdin
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/util.c b/util.c
-index 61a9e89b..8681a32c 100644
+index 462db851..3a9b00d0 100644
 --- a/util.c
 +++ b/util.c
 @@ -1259,7 +1259,7 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
@@ -34,5 +34,5 @@ index 61a9e89b..8681a32c 100644
      case 'r':
      case 'R':
 -- 
-2.36.1
+2.37.3
 

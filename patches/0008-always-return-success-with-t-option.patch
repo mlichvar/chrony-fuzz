@@ -1,4 +1,4 @@
-From 758015ef69461c7681e679c80c827f8326c873d7 Mon Sep 17 00:00:00 2001
+From fcc4feccf196210639bce4223da11eb26c83692e Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:50:36 +0200
 Subject: [PATCH 08/19] always return success with -t option
@@ -20,5 +20,5 @@ index 1500654f..538ee6b4 100644
  }
  
 -- 
-2.36.1
+2.37.3
 

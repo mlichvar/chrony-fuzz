@@ -1,4 +1,4 @@
-From 0b6b4ed4edee5de4abd620e547a064d9cce14495 Mon Sep 17 00:00:00 2001
+From fb570eaf83615f56ce7323f5ccd725295abb9591 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:24:22 +0200
 Subject: [PATCH 04/19] disable pidfile
@@ -42,5 +42,5 @@ index e738236d..1500654f 100644
    PRV_Initialise();
    LCL_Initialise();
 -- 
-2.36.1
+2.37.3
 
