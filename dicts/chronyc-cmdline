@@ -83,6 +83,7 @@
 "retries"
 "rtcdata"
 "selectdata"
+"selectopts"
 "server"
 "serverstats"
 "settime"
