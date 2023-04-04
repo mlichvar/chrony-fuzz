@@ -5,6 +5,14 @@
 export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
 export TEST_STDIN_FILE="data/emptydir/192.168.123.2.dat"
 
+seed_command=(chronyd -d \
+	'allow' \
+	'local')
+
+seed_command2=(chronyd -d \
+	'server 192.168.123.2 minpoll 0 maxpoll 0 iburst' \
+	'dumpdir tmp')
+
 run_test chronyd -d -d -r -t 2 \
 	'server 192.168.123.2' \
 	'dumpdir data/emptydir'

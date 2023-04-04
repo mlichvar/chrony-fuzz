@@ -7,4 +7,7 @@ export TEST_EARLY_AFL_INIT=1
 export TEST_FATAL_SUCCESS=1
 export TEST_STDIN_FILE="data/emptydir/chrony.conf"
 
+seeds=("$(grep -h -v '^[#!][#! ]' "$WORK_DIR/chrony/examples/chrony.conf.example"* | \
+	sed 's/^[!# ]*//' | sort -u)" )
+
 run_test chronyd -d -d -p -f data/emptydir/chrony.conf

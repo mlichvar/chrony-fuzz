@@ -4,6 +4,12 @@
 
 export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_SUBNET=2 CLKNETSIM_FUZZ_PORT=1
 
+seed_command=(chronyc -h '/clknetsim/unix/1:1' -n -m)
+while read c; do
+	seed_command+=("$c")
+done < <(grep -Pzo '\n *chronyc_conf="[^"]*"\n' "$WORK_DIR/chrony/test/simulation/110-chronyc" | \
+	sed 's/\(^[^"]*="\|"[^"]*$\)//g' | sort -u | grep -aviE '(nosuch|waitsync)')
+
 run_test chronyd -d -d \
 	'bindcmdaddress /clknetsim/unix/chronyd.sock' \
 	'dumpdir dumpdir' \

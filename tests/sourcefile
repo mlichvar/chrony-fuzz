@@ -5,5 +5,11 @@
 export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
 export TEST_STDIN_FILE="data/sourcedir/dummy.sources"
 
+seeds=()
+while read c; do
+	seeds+=("$c")
+done < <(grep '^[ 	]*"add [^"]*"[ \\]*$' "$WORK_DIR/chrony/test/simulation/110-chronyc" | \
+		tr -d '"\\' | sed 's/add //')
+
 run_test chronyd -d -d -t 2 \
 	'sourcedir data/sourcedir'

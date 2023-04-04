@@ -3,8 +3,19 @@
 . common.test
 
 export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
-export TEST_STDIN_FILE="data/emptydir/192.168.123.1.nts"
+export TEST_STDIN_FILE="data/emptydir/192.168.123.2.nts"
+
+seed_command=(chronyd -d \
+	'allow' \
+	'local' \
+	'ntsprocesses 0' \
+	'ntsserverkey data/emptydir/server.key' \
+	'ntsservercert data/emptydir/server.crt' )
+
+seed_command2=(chronyd -d \
+	'server node2.net1.clk nts' \
+	'ntsdumpdir tmp')
 
 run_test chronyd -d -d -t 2 \
-	'server node1.net1.clk nts' \
+	'server node2.net1.clk nts' \
 	'ntsdumpdir data/emptydir'

@@ -5,7 +5,13 @@
 export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=4460 CLKNETSIM_FUZZ_START=0.3
 export CLKNETSIM_FUZZ_MSG_TYPE=3
 
+seed_command=(chronyd -d
+	'allow' \
+	'local' \
+	'ntsprocesses 0' \
+	'ntsserverkey data/emptydir/server.key' \
+	'ntsservercert data/emptydir/server.crt')
+
 run_test chronyd -d -d -t 100 \
-	'acquisitionport 4460' \
 	'makestep 10 2' \
 	'server node2.net1.clk iburst nts'

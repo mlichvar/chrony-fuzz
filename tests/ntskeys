@@ -6,6 +6,14 @@ export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
 export TEST_EARLY_AFL_INIT=1
 export TEST_STDIN_FILE="data/emptydir/ntskeys"
 
+seed_command=(chronyd -d '')
+
+seed_command2=(chronyd -d -t 1 \
+	'ntsserverkey data/emptydir/server.key' \
+	'ntsservercert data/emptydir/server.crt' \
+	'ntsdumpdir tmp' \
+	'ntsprocesses 0')
+
 run_test chronyd -d -d -t 1 \
 	'ntsserverkey data/emptydir/server.key' \
 	'ntsservercert data/emptydir/server.crt' \

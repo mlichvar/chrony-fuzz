@@ -5,4 +5,6 @@
 export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=1
 export TEST_EARLY_AFL_INIT=1
 
+seeds=("p1234" "x1234")
+
 run_test chronyd -d --internal-fuzz

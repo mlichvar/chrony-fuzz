@@ -1,14 +1,14 @@
-From 469c895bf6dc40879c649d88fde3ccdae310583a Mon Sep 17 00:00:00 2001
+From 33fdebd5e5b1d496a80c6651c4a044feffc771a9 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:33 +0200
-Subject: [PATCH 14/19] follow acquisitionport for client NTS-KE
+Subject: [PATCH 14/19] set client NTS-KE port to remote port
 
 ---
  nts_ke_client.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/nts_ke_client.c b/nts_ke_client.c
-index 3891f712..4098dc2d 100644
+index 3891f712..c7ecb61a 100644
 --- a/nts_ke_client.c
 +++ b/nts_ke_client.c
 @@ -387,7 +387,7 @@ NKC_Start(NKC_Instance inst)
@@ -16,10 +16,10 @@ index 3891f712..4098dc2d 100644
    /* Follow the bindacqaddress and bindacqdevice settings */
    CNF_GetBindAcquisitionAddress(inst->address.ip_addr.family, &local_addr.ip_addr);
 -  local_addr.port = 0;
-+  local_addr.port = MAX(CNF_GetAcquisitionPort(), 0);
++  local_addr.port = inst->address.port;
    iface = CNF_GetBindAcquisitionInterface();
  
    /* Make a label containing both the address and name of the server */
 -- 
-2.37.3
+2.39.2
 

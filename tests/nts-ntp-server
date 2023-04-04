@@ -4,6 +4,10 @@
 
 export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=123 CLKNETSIM_FUZZ_START=5.1
 
+seed_command=(chronyd -d -t 5 \
+	'acquisitionport 123' \
+	'server node1.net1.clk iburst nts')
+
 run_test chronyd -d -d \
 	'allow' \
 	'local stratum 5 orphan' \

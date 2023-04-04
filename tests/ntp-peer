@@ -4,6 +4,10 @@
 
 export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=123
 
+seed_command=(chronyd -d \
+	'keyfile data/chrony.keys' \
+	'peer 192.168.123.1 xleave key 1')
+
 run_test chronyd -d -d -t 300 \
 	'keyfile data/chrony.keys' \
 	'local stratum 5 orphan' \

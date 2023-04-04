@@ -4,4 +4,14 @@
 
 export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
 
+seeds=()
+while read c; do
+	seeds+=("$c")
+done < <( (
+		grep -Pzo '\n *chronyc_conf="[^"]*"\n' "$WORK_DIR/chrony/test/simulation/110-chronyc" | \
+			sed 's/\(^[^"]*="\|"[^"]*$\)//g'
+		grep '^[ 	]*"[^"]*"[ \\]*$' "$WORK_DIR/chrony/test/simulation/110-chronyc" | \
+			tr -d '"\\' | sort -u
+	  ) | sort -u)
+
 run_test chronyc -h 192.168.123.2 -d

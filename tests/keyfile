@@ -6,5 +6,8 @@ export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
 export TEST_EARLY_AFL_INIT=1
 export TEST_STDIN_FILE="data/emptydir/chrony.keys"
 
+seeds=("$(grep '^#[^ ]' "$WORK_DIR/chrony/examples/chrony.keys.example" | \
+	sed 's/^[!# ]*//')" )
+
 run_test chronyd -d -d -t 1 \
 	'keyfile data/emptydir/chrony.keys'

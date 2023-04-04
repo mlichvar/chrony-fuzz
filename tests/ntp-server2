@@ -4,6 +4,10 @@
 
 export CLKNETSIM_FUZZ_MODE=2 CLKNETSIM_FUZZ_PORT=123 CLKNETSIM_FUZZ_START=3.0
 
+seed_command=(chronyd -d -t 10 \
+	'acquisitionport 123' \
+	'server node1.net1.clk extfield F323 iburst')
+
 run_test chronyd -d -d \
 	'allow' \
 	'keyfile data/chrony.keys' \

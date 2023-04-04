@@ -3,8 +3,17 @@
 . common.test
 
 export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=323 CLKNETSIM_FUZZ_START=0.05
+export CLKNETSIM_FUZZ_SUBNET=2 CLKNETSIM_FUZZ_PORT=1
 
-run_test chronyc -h 192.168.123.2 -d -n -m \
+seed_command=(chronyd -d \
+	'bindcmdaddress /clknetsim/unix/chronyd.sock' \
+	'cmdallow' \
+	'local' \
+	'manual' \
+	'server 192.168.123.2' \
+	'smoothtime 1 1')
+
+run_test chronyc -h '/clknetsim/unix/2:1' -d -n -m \
 	'rekey' \
 	'activity' \
 	'authdata -v' \

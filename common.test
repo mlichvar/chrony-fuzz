@@ -25,6 +25,66 @@ if ! [ -x "$WORK_DIR/chrony/chronyd" ] || ! [ -x "$WORK_DIR/chrony/chronyc" ]; t
 	exit 1
 fi
 
+seed() {
+	rm -rf "$WORK_DIR/seed"
+	mkdir -p "$WORK_DIR/seed" || exit 1
+	rm -f "$input"/seed*
+	mkdir -p "$input" || exit 1
+
+	if [ ${#seeds[@]} -gt 0 ]; then
+		i=0
+		for s in "${seeds[@]}"; do
+			i=$((i + 1))
+			printf "%s" "$s" | wc -c
+			printf "%s" "$s" > "$input"/seed.$i
+		done
+		return
+	fi
+
+	if [ ${#seed_command[@]} -eq 0 ]; then
+		echo "no seed command"
+		return
+	fi
+
+	mode=$CLKNETSIM_FUZZ_MODE
+	unset CLKNETSIM_FUZZ_MODE
+	port=$CLKNETSIM_FUZZ_PORT
+	subnet=${CLKNETSIM_FUZZ_SUBNET:-1}
+	export CLKNETSIM_UNIX_SUBNET=2
+	export CLKNETSIM_SOCKET=$WORK_DIR/seed/sock
+	stdin=$TEST_STDIN_FILE
+	unset TEST_STDIN_FILE
+
+	if [ ${#seed_command2[@]} -gt 0 ]; then
+		rm -rf "$WORK_DIR/seed/{data,tmp}"
+		ln -sf "$(pwd)/data" "$WORK_DIR/seed/data"
+		ln -sf . "$WORK_DIR/seed/tmp"
+		pushd "$WORK_DIR/seed" || return
+		TEST_ENABLE_WRITE=1 \
+		CLKNETSIM_NODE=1 CLKNETSIM_PCAP_DUMP="$WORK_DIR/seed/pcap" \
+			"${seed_command2[@]}" &> "$WORK_DIR/seed/log.1" &
+		popd || return
+	else
+		CLKNETSIM_NODE=1 CLKNETSIM_PCAP_DUMP="$WORK_DIR/seed/pcap" \
+			"$@" &> "$WORK_DIR/seed/log.1" &
+	fi
+	CLKNETSIM_NODE=2 "${seed_command[@]}" &> "$WORK_DIR/seed/log.2" &
+	../clknetsim/clknetsim -v 0 -s "$CLKNETSIM_SOCKET" -n 2 -l 100 <(cat <<-EOF
+		node1_delay2 = (+ 1e-6)
+		node2_delay1 = (+ 1e-6)
+	EOF
+		) 2 &> "$WORK_DIR/seed/log"
+	wait
+
+	if [ -n "$stdin" ]; then
+		cp "$WORK_DIR/seed/$(basename "$stdin")" "$input/seed"
+	else
+		scripts/pcap2input -o "$input/seed" \
+			-f "dst 192.168.$((122 + subnet)).1 and src port $port" \
+			$([ "$mode" -eq 1 ] && echo "-p") "$WORK_DIR/seed/pcap"
+	fi
+}
+
 single() {
 	args=()
 	for arg; do
@@ -133,6 +193,8 @@ fuzz() {
 
 run_test() {
 	case "$TEST_MODE" in
+		seed)
+			seed "$@";;
 		single)
 			single "$@";;
 		check|checkverbose)
