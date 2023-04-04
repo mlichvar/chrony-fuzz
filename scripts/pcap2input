@@ -1,22 +1,29 @@
 #!/usr/bin/python3
 
+import argparse
 import pcapy
 import struct
 import sys
 
-if len(sys.argv) < 3:
-    print("Usage: {} [-s] pcap...".format(sys.argv[0]), file=sys.stderr)
-    sys.exit(1)
+parser = argparse.ArgumentParser(description="Prepare fuzz input from pcap")
+parser.add_argument("pcaps", nargs="*")
+parser.add_argument("-o", "--output", type=str, default=None)
+parser.add_argument("-s", "--single", action="store_const", const=True, default=False)
+parser.add_argument("-p", "--split", action="store_const", const=True, default=False)
+parser.add_argument("-f", "--filter", type=str, default="")
 
-args = sys.argv[1:]
-single = False
+args = parser.parse_args()
+index=0
 
-if args[0] == "-s":
-    single = True
-    args = args[1:]
+if args.output is None:
+    outfile = sys.stdout.buffer
+    assert(not args.split)
+else:
+    outfile = None
 
-for f in args:
+for f in args.pcaps:
     cap = pcapy.open_offline(f)
+    cap.setfilter(args.filter)
 
     while True:
         (header, frame) = cap.next()
@@ -24,16 +31,29 @@ for f in args:
             break
 
         if cap.datalink() == pcapy.DLT_EN10MB:
-            udp_payload = bytearray(frame[14 + 20 + 8:])
+            if frame[14 + 9] == 17:
+                payload = bytearray(frame[14 + 20 + 8:])
+            elif frame[14 + 9] == 6:
+                payload = bytearray(frame[14 + 20 + 20:])
+            else:
+                print("Unsupported message type")
+                sys.exit(2)
         else:
             print("Unsupported datalink type")
             sys.exit(2)
 
-        print(len(udp_payload), file=sys.stderr)
+        print(len(payload), file=sys.stderr)
 
-        if single:
-            sys.stdout.buffer.write(udp_payload)
-            sys.exit(0)
+        if outfile is None:
+            index += 1
+            outfile = open(args.output + (".{}".format(index) if args.split else ""), "wb")
+
+        if args.single or args.split:
+            outfile.write(payload)
+            outfile.close()
+            outfile = None
+            if args.single:
+                sys.exit(0)
         else:
-            hdr = struct.pack("!H", len(udp_payload))
-            sys.stdout.buffer.write(hdr + udp_payload)
+            hdr = struct.pack("!H", len(payload))
+            outfile.write(hdr + payload)
