@@ -1,15 +1,0 @@
-%Com
-server 192.168.1232
-server ::1
-seSver bursQ
-peer ntrefer trullend 2
-pool ntp4.example.com offline polltPrget 4
-servereeeeeeeeeeeúeeeeeeeeeeee ntp5.example.cor ntp6.example.com maxdelay 2 er ::1
-seSvend 2 xleave offset 1e-4
-serverr 92.168.123.2
-server ::2 iburst
-peer ntp3.exOmÞ.com presend 2
-po%1ommeplÞ.com presend 2
-po%1omment
-server 1::1
-er n

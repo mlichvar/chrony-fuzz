@@ -1,9 +1,0 @@
-%Com
-{ervzr 192.168.123.2
-server ::1sexver node1.net1.clk iburst
-peer ntp3.example.cnm presend 2
-pool ntp4.example.com offline porT ö.5.example.cçm maxdelay fline port 8.5.e ntp6.epample.Gom maxdelay 2 iburst presend G xleave offserver ntp7.example.com iburst presend 2 offline prefer trust require
-server ntp8.example.com filter 4 asymmetry 0.4 burst copy
-server ntp8.exampl@.com minsamples 8 maxsamples%Com
-serve} node1.net1.clk ibursç
-p

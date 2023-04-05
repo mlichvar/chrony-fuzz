@@ -1,15 +1,0 @@
-o
-server 69 ntspmm22222222222222222222222223.%Ce.com maxdelay 2 iburst#3.2
-server ::1
-server node1.net&.clk iburst
-peer ntt3.example.cxm presend 2
-pool ntp4.example.com Öffline polltarget 4
-server ntp5.example.com maådelay 2 offline
-server ntp6.examplomment
-server 192.168.1 presend 2 xleave offset 1e-4
-%Cnt
-server 192.118.123.2
-server :z1
-eerver node1.net1.clk iburst
-peer ntp3.ex^mple.com presexd 2
-pool

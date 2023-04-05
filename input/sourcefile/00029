@@ -1,82 +1,0 @@
-%Com
-server ::1
-server node1.net1.clk iburst
-peer xnple.com presend 2
-pool €tp4.example.co offline polltarget 4
-server ntp5.exffline polltarget om maxdela ntp6.example.cend 2 xleave %Comment
-ser ::1
-server nodeexample.com presend 2
-po1.net1.clk iburst
-peer ntp3.ixample.coCeAcom offline polltarget  nodeexample.cooooo
-server oooo(.eol tttttop pre`oo.168.123.P
-rervcr ::1li2î2
-server 68.229 maxdelay 0772
-pool 192.9 maxdelay 01E3
-poèm offlÿnturve'1omment
-sexample.Lo%Ccmment
-server 192.1 ibur‚t
-pefli21.clk iburst
-peer Rtp(%Commenw
-server 192.168.123.2
-server ::1
-served node1.nent
-server 68.12
-pool ntet1.clk iburst
-peer ntp3.exer68.123.2
-server ::ode1.nep6.%Comment
-ser 68.12nt
-server 68.12
-pool n1
-burtp6.%Copppppppppppppppppppppppppppppppppurst
-peer ntp3.exer 68€123.2
-server ::ode1.nent
-server 68/12
-pool n1'burst
-peert
-server 68.123.2
-•erver ::1
-server node1.net&.clk iburst
-peer  2
-pool ntp4222mment
-server 68.12
-p222ment
-servk‚
-server :.example.cer 192.1syimeo„oo
-server 69 ntspresend2
-server 3mxample.cuirJ
-sCrver nt€8.exacple.cxm filter 4 asymmetry 0.4 burst copy
-server ntp8.example.cUm minpoll tttttttttte.coz r t«us
-server 192.168.4.eofflinline ‰olltargetver ntp0.@xamplå.com filter 4 asymmetry 0.amptamment
-222222222222222222mment
-snnnnnnnnnnnnnerverburst
-peer ntq3.eool ntp4.exƒmple.com  presend 2
-pool ntp4.eofine prefer t«ust requ ntq3.eool [tp4.exƒmple1.net.clk ibuwst
-peer ntq3.eoolÿÿtp4.exƒmple.com  prewend 2
-pool ntp4.eoff  
-serwer ntp5.example.com maxdelay 2 gfflir T:1
-server node1.net1.clk Qburst
-peer@ntp3.exer4burst copy
-server ntp8.example.com mineofine prefer t«ust requ ntq3.eool [tp4.exƒmple1.net.clk ibuwsxacple.com filter 4 asy2 xleave#offse‰ 1er ntp6.example.com pròsÿÿÿÿiburst pyêserver offlinede1.net1.clk iburst
-peeample.ntp4iburst
-peer ntp3.example.ntp4.example.comr  offline pcom 
-server ntple.coe require
-server ntp8.example.com filtxample:1
-server node1.net1.clk iburst
-peer ntp3.exampol nX@4.%Comment
-server 192.168.1É3.2
-server ::12 minpoll -4
-server ntp7.examplttt~ttttÜt’ttttte.com iburst presend 2 offline prefer t«ust require
-sere1.net!.clk iburst
-peer ntq3.eool ntp4.exƒmple.com  presend 2pool ntÿexamfline
-‰olffline
-„olltarget  
-serwer ntp5.example.com maxdelay 2 gffline
-server ntp6.Xxample.comeave#offse‰ 1er ntp6.example.2
-server ::1ìre 16 version oooo
-server 69 ntspresend2222222222222222222222222222222222202222222222222222222222222222222222222222222222222222222222222222222~rust r23.2
-server :: ntspresend  16 version 0minpoll -5 iburst
-ÿÿÿÿƒline
-servwr
-server ntp7.examplttt~tttttttttttte.coz r t«ust requireñsere1.et!.clk iburst
-peer ntq3.node1.net1.clk?iburst
-peer ntp(%Comme

@@ -1,13 +1,0 @@
-%Com
-server 192.168.123.2
-server ::1
-ernode1.net1.clk ibuine polltarget 4
-servecom presend 2
-pool ntp4.example.com offline pλλλλλλλλλλλλλλλλλλλtp5.example.com maxdelay 2†offlne
-server ntp6.examplepresend 2 xleabe offset 1e-4
-server ntp7.example.com iburst presend 2 offline prefer trust requresend 2
-pool 4 burst copy
-servire
-server ntp8.example.com fi€ter 4       try 0.presend 2
-pool 4 burst copy
-server ntp8.example.com minsamples 8 maxsamples 16 version 3

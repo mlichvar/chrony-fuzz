@@ -1,1 +1,0 @@
-add pool node1.net1.clk minpoll 3 maxpoll 3 port 333 maxdelay 2.0 maxdelayratio 3.0 burst prefer noselect nts

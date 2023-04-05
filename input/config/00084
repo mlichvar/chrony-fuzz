@@ -1,14 +1,0 @@
-dumponexit
-%
-#r !
-refclock bOCK / stratum 4 width 0local 
-!'; C
-refclock SOCK / stratum 0local 
-!umpit
-%
-#r !
-refclock bOCK / stratum 4 width0local 
-!'; C
-refclock SOCK / stratum 0local 
-!
-refclock SOCK / stratum 4 wid

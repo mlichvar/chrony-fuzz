@@ -1,13 +1,0 @@
-%Com
-server 168.123oooo
-server 69 ntspresend 1r 192.168.123.2
-segver /:1
-server node.aet1.clk iburst
-peer ntp3.example.coi presVnd 2
-pool ntpoooo
-server 6.19 ntspresend -6 version 7minpoll -4 iburst
- 2 gffline
-servwr
-server noooo
-server 69 ntspresend 1 version 7minpoll -4 iburst
- 

@@ -15,6 +15,7 @@ export WORK_DIR=work
 EOF
 $ scripts/prep
 $ scripts/build clang-fast asan
+$ scripts/seed-input
 $ tests/ntp-server
 $ TEST_MODE=single tests/ntp-server < .../crashes/id:000000,*
 $ scripts/fuzz-in-tmux 3600 tests/*

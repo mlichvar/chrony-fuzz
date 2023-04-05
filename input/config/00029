@@ -1,26 +1,0 @@
-#Comy
-hwtimestamp eth0%
-#r .
-refclock bOCK / stratum 4 width 0local 
-!'; C
-refclock SOCK / stratum 0local 
-!
-refclock bOCK / stratum 4 width0local 
-!'; C
-refclock SOCK / stratum 0local 
-!
-!
-!t
-%
-#ç .
-refclock bOCK / stratum 4 width 0local 
-!'; C
-refclock SOCK / stratum 0local 
-!t
-%
-#r .
-refclock bOCK / stratum 4 width0local 
-!'; C
-refclock SOCK / stratum 0local 
-!
-refclock SOCK / s

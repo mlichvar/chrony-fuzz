@@ -1,5 +1,0 @@
-day days
-settr 127
-settime s  s days s day s days+2days
-settime s days s days y s days+2days
-settime s days ss d

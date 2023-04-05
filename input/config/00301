@@ -1,6 +1,0 @@
-#Comnt
-!ent
-; Cot
-;Ct
-server ntpm minsamples 8 maxsamples 16 version 3
-smoothtime #######################################################################/sys/class/hwmon/hwmon0/temp2_input 30 /etc/chrony.tempcomp

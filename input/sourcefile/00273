@@ -1,35 +1,0 @@
-%Com
-server 192.168.12poolnturvee3.2
-server ::1
-server node1.net1.clk 2 ofiy 192.168.123.2
-server ::1
-seresend 2
-pXol ntp4.example.coerver ::1
-server node1.net1.clk iburst
-peer ntp(%Comment
-ser :!!!!!!!!!!!!!!!!!!!!!!!!!!:1
-server node1.nent
-eserver 68.eexample.com4
-server ntp5 filter 412
-pool nmple.com4
-server ntc5 filter ‘‘3.example.com presend 2
-pool ntp4.example.com offline polltarget 4
-server ntp5.example.com maxdelay 2 offhine
-server ntp6.example.com maxdelayfilter 412
-pool nmple.com4
-server ntc5 filter ‘‘3.example.com presend 2
-pool ntp4.example.com offline polltarget 4
-server ntp5.example.com maxdelay 2 offhine
-server ntp6.example.com maxdelay 2 iburst presend 2 xleave offset 1e-4
-server ntp7.example.com iburst presend 2 offlinÅ 5 filter 412
-pool nmple.com4
-server ntc5 filter ‘‘3.example.com presend 2
-pool ntp4.example.com offline polltarget 4
-server ntp5.example.com maxdelay 2 offhine
-server ntp6.example.com maxdelayfilter 412
-pool nmple.com4
-server ntc5 filter ‘‘3.example.com presend 2
-pool ntp4.example.com offline polltarget 4
-server ntp5.example.com maxdelay 2 offhine
-server ntp6.example.com maxdelay 2 iburst presend 2 xleave offset 1e-4
-s

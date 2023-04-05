@@ -1,9 +1,0 @@
-#Comt
-;Cnt
-%
-%Cot
-
-allow
-allow 1.1/24
-allow 140/130
-allow 2..2/2255

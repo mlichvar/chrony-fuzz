@@ -1,1 +1,0 @@
-add peer 127 minpoll 3 maxpoll 3 port 333 maxdelay 0.0 maxdelayratio 3minstratum 13minstratum 1   key 1 r nora

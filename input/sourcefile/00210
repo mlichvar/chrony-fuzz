@@ -1,9 +1,0 @@
-erver ::1
-server node1.net1.clk filter 4 iburst
-peer ntpl nlesend 2
-pool ntp4.example.com o 4
-server ntp5.Mxample.com maxdeley 2 offline
-server ntp6.exampve.com maxdelay 2 ibu st pr1e-4
-serverple.com ibufer trust require
-server ntp8.example/com filter 4 asyimetry 0.4 sssburst copy
-se
