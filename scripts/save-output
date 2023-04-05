@@ -4,9 +4,10 @@ set -e
 
 [ -f env ] && . ./env
 
+INPUT_DIR=${INPUT_DIR:-input}
 WORK_DIR=${WORK_DIR:-work}
 
-for i in input/*; do
+for i in "$INPUT_DIR"/*; do
 	queue=$WORK_DIR/output/$(basename "$i")/default/queue
 	[ -d "$queue" ] || continue
 	echo "$queue"

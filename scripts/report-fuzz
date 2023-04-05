@@ -4,12 +4,14 @@ set -e
 
 [ -f env ] && . ./env
 
+INPUT_DIR=${INPUT_DIR:-input}
+
 export LC_ALL=C
 
 printf "%-16s %5s %6s %6s %6s %6s %6s %6s %6s\n" \
 	"Test name" "State" "Time" "Speed" "Cycles" "Corpus" "Found" "Crash" "Hang"
 
-for i in input/*; do
+for i in "$INPUT_DIR"/*; do
 	name=$(basename "$i")
 	printf "%-20s " "$name"
 
