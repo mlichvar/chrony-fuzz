@@ -19,6 +19,7 @@ for i in "$INPUT_DIR"/*; do
 	comm -2 -3 <(echo "$sums1" | cut -d ' ' -f 1) <(echo "$sums2" | cut -d ' ' -f 1) | \
 		join -j 1 - <(echo "$sums1") | \
 		while read -r _ in; do
+			[ "$in" = "-" ] && continue
 			while true; do
 				index=$((index + 1))
 				out=$(printf "%s/%05d" "$i" "$index")
