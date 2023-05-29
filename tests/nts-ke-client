@@ -8,6 +8,8 @@ export CLKNETSIM_FUZZ_MSG_TYPE=3
 seed_command=(chronyd -d
 	'allow' \
 	'local' \
+	'port 11123' \
+	'ntsntpserver node2.net1.clk' \
 	'ntsprocesses 0' \
 	'ntsserverkey data/emptydir/server.key' \
 	'ntsservercert data/emptydir/server.crt')
