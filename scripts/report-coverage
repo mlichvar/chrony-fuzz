@@ -14,6 +14,7 @@ report() {
 for build_opts in "gcc-fast gcov"; do
 	for extra_conf_opts in \
 		"" \
+		"--without-aes-gcm-siv" \
 		"--disable-nts" \
 		"--disable-ntp" \
 		"--disable-ipv6"
