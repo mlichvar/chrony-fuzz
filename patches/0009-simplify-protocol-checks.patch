@@ -1,4 +1,4 @@
-From 89f4f15dcffac9a271b435b7dadd9488b8068d09 Mon Sep 17 00:00:00 2001
+From 4d884f14dc779637919b18f504061990b6aba386 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:25:35 +0200
 Subject: [PATCH 09/19] simplify protocol checks
@@ -7,10 +7,10 @@ Subject: [PATCH 09/19] simplify protocol checks
  client.c         |  2 +-
  cmdmon.c         |  2 +-
  keys.c           |  2 +-
- ntp_core.c       | 16 ++++++++++++++--
+ ntp_core.c       | 24 ++++++++++++++++++++----
  ntp_io.c         |  3 +++
  nts_ntp_client.c |  7 ++++---
- 6 files changed, 24 insertions(+), 8 deletions(-)
+ 6 files changed, 30 insertions(+), 10 deletions(-)
 
 diff --git a/client.c b/client.c
 index 80bc7c00..438228b8 100644
@@ -52,10 +52,10 @@ index 9225e6cd..bd4eb574 100644
  
  /* ================================================== */
 diff --git a/ntp_core.c b/ntp_core.c
-index 4e2289a3..3ee4f463 100644
+index 02394b84..bb39858e 100644
 --- a/ntp_core.c
 +++ b/ntp_core.c
-@@ -1185,7 +1185,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+@@ -1191,7 +1191,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
    message.precision = precision;
    message.root_delay = UTI_DoubleToNtp32(our_root_delay);
    message.root_dispersion = UTI_DoubleToNtp32(our_root_dispersion);
@@ -64,12 +64,12 @@ index 4e2289a3..3ee4f463 100644
  
    /* Now fill in timestamps */
  
-@@ -1260,6 +1260,12 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+@@ -1266,6 +1266,12 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
      message.receive_ts.lo |= htonl(1);
      message.transmit_ts.lo &= ~htonl(1);
    }
 +  if (my_mode != MODE_CLIENT)
-+    message.originate_ts.lo |= htonl(60);
++    message.originate_ts.lo |= htonl(60 | 128);
 +  if (interleaved)
 +    message.originate_ts.lo |= htonl(2);
 +  else
@@ -77,7 +77,7 @@ index 4e2289a3..3ee4f463 100644
  
    /* Generate the authentication data */
    if (auth) {
-@@ -1913,6 +1919,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -1919,6 +1925,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    /* Test 1 checks for duplicate packet */
    test1 = UTI_CompareNtp64(&message->receive_ts, &inst->remote_ntp_rx) ||
            UTI_CompareNtp64(&message->transmit_ts, &inst->remote_ntp_tx);
@@ -85,7 +85,7 @@ index 4e2289a3..3ee4f463 100644
  
    /* Test 2 checks for bogus packet in the basic and interleaved modes.  This
       ensures the source is responding to the latest packet we sent to it. */
-@@ -1921,12 +1928,15 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -1927,12 +1934,15 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
             !UTI_CompareNtp64(&message->originate_ts, &inst->local_ntp_rx);
    test2 = test2n || test2i;
    interleaved_packet = !test2n && test2i;
@@ -101,7 +101,7 @@ index 4e2289a3..3ee4f463 100644
  
    /* Test 4 would check for denied access.  It would always pass as this
       function is called only for known sources. */
-@@ -1935,6 +1945,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -1941,6 +1951,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
       which had to pass all these tests before, avoid authenticating it for
       the second time (that is not allowed in the NTS code). */
    test5 = saved || NAU_CheckResponseAuth(inst->auth, message, info);
@@ -109,7 +109,17 @@ index 4e2289a3..3ee4f463 100644
  
    /* Test 6 checks for unsynchronised server */
    test6 = pkt_leap != LEAP_Unsynchronised &&
-@@ -1968,7 +1979,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -1964,7 +1975,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+      response to the request, when at least one good response has already been
+      accepted to avoid incorrectly confirming a tentative source. */
+   if (valid_packet && synced_packet && !saved && !inst->valid_rx &&
+-      inst->had_hw_tx_timestamp && inst->local_tx.source != NTP_TS_HARDWARE &&
++      (!!(message->originate_ts.lo & htonl(64)) || inst->had_hw_tx_timestamp) &&
++       inst->local_tx.source != NTP_TS_HARDWARE &&
+       inst->report.total_good_count > 0) {
+     if (save_response(inst, local_addr, rx_ts, message, info))
+       return 1;
+@@ -1974,7 +1986,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    kod_rate = 0;
    if (test1 && test2 && test5 && pkt_leap == LEAP_Unsynchronised &&
        message->stratum == NTP_INVALID_STRATUM) {
@@ -118,7 +128,33 @@ index 4e2289a3..3ee4f463 100644
        kod_rate = 1;
    }
  
-@@ -2602,6 +2613,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
+@@ -2128,7 +2140,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+ 
+     /* Test D requires that the source is not synchronised to us and is not us
+        to prevent a synchronisation loop */
+-    testD = check_sync_loop(inst, message, local_addr, &rx_ts->ts);
++    testD = check_sync_loop(inst, message, local_addr, &rx_ts->ts) ||
++            !!(message->originate_ts.lo & htonl(128));
+   } else {
+     remote_interval = local_interval = response_time = 0.0;
+     sample.offset = sample.peer_delay = sample.peer_dispersion = 0.0;
+@@ -2154,6 +2167,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+   if ((inst->mode == MODE_CLIENT && valid_packet && !inst->valid_rx) ||
+       (inst->mode == MODE_ACTIVE && valid_packet &&
+        (!inst->valid_rx ||
++        !!(message->originate_ts.lo & htonl(256)) ||
+         UTI_CompareNtp64(&inst->remote_ntp_tx, &message->transmit_ts) < 0))) {
+     inst->remote_ntp_rx = message->receive_ts;
+     inst->remote_ntp_tx = message->transmit_ts;
+@@ -2186,6 +2200,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+   } else if (inst->mode == MODE_ACTIVE &&
+              test1 && !UTI_IsZeroNtp64(&message->transmit_ts) && test5 &&
+              (!inst->updated_init_timestamps ||
++              !!(message->originate_ts.lo & htonl(512)) ||
+               UTI_CompareNtp64(&inst->init_remote_ntp_tx, &message->transmit_ts) < 0)) {
+     inst->init_remote_ntp_tx = message->transmit_ts;
+     inst->init_local_rx = *rx_ts;
+@@ -2608,6 +2623,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
      UTI_ZeroTimespec(&local_tx.ts);
      local_tx.source = NTP_TS_DAEMON;
      interleaved = CLG_GetNtpTxTimestamp(&ntp_rx, &local_tx.ts, &local_tx.source);
@@ -180,5 +216,5 @@ index 10cf0712..156ef3f6 100644
        inst->nak_response = 1;
        return 0;
 -- 
-2.39.2
+2.40.1
 
