@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+[ -f env ] && . ./env
+
+INPUT_DIR=${INPUT_DIR:-input}
+WORK_DIR=${WORK_DIR:-work}
+
+export AFL_ALLOW_TMP=1
+
+for i in tests/*; do
+	name=$(basename "$i")
+	echo -n "$name: "
+
+	if ! grep -qE '^(seeds|seed_command)=' "tests/$name"; then
+		echo "no seed command"
+		continue
+	fi
+
+	if ! TEST_MODE=seed "tests/$name" &> "$WORK_DIR/seed.log"; then
+		echo
+		tail "$WORK_DIR/seed.log"
+		exit 1
+	fi
+
+	echo "$(ls -1 "$INPUT_DIR/$name/seed"* | wc -l) $(cat "$INPUT_DIR/$name/seed"* | wc -c)"
+done
