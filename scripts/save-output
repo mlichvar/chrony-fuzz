@@ -7,10 +7,12 @@ set -e
 INPUT_DIR=${INPUT_DIR:-input}
 WORK_DIR=${WORK_DIR:-work}
 
-for i in "$INPUT_DIR"/*; do
-	queue=$WORK_DIR/output/$(basename "$i")/default/queue
+for queue in "$WORK_DIR"/output/*/default/queue; do
 	[ -d "$queue" ] || continue
 	echo "$queue"
+
+	i="$INPUT_DIR/"$(basename ${queue%/default/queue})
+	mkdir -p "$i"
 
 	sums1=$(find "$queue" -maxdepth 1 -type f -print0 | xargs -0 md5sum | sort)
 	sums2=$(find "$i" -maxdepth 1 -type f -print0 | xargs -0 md5sum | sort)
