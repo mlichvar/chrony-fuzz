@@ -1,7 +1,7 @@
-From 8547256e42f810ba0f84e4cc75721715a11dabd0 Mon Sep 17 00:00:00 2001
+From 1b22d4757644a1d6b4862c153f76c2edf2894294 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:54:03 +0200
-Subject: [PATCH 12/19] bypass signd
+Subject: [PATCH 12/17] bypass signd
 
 ---
  ntp_signd.c | 10 ++++++++++
@@ -39,5 +39,5 @@ index 77b3249a..e63cd62e 100644
      if (s < 0) {
        close_socket();
 -- 
-2.37.3
+2.41.0
 

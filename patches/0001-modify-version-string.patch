@@ -1,17 +1,17 @@
-From bae8d637ab104c74f29a38d9e77c43d362955f33 Mon Sep 17 00:00:00 2001
+From 225a93422c0fa7c127433cb1dc5e82678ed84a36 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 15:26:01 +0200
-Subject: [PATCH 01/19] modify version string
+Subject: [PATCH 01/17] modify version string
 
 ---
  configure | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure b/configure
-index e8d7556b..f3966e93 100755
+index 81bb4b8e..225137f7 100755
 --- a/configure
 +++ b/configure
-@@ -1106,7 +1106,7 @@ else
+@@ -1118,7 +1118,7 @@ else
    CHRONY_VERSION="DEVELOPMENT"
  fi
  
@@ -21,5 +21,5 @@ index e8d7556b..f3966e93 100755
  for f in Makefile doc/Makefile test/unit/Makefile
  do
 -- 
-2.37.3
+2.41.0
 

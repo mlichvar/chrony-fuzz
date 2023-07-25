@@ -1,14 +1,14 @@
-From fcc4feccf196210639bce4223da11eb26c83692e Mon Sep 17 00:00:00 2001
+From 1e876d0a2f2461e535e44de634fa39ce834d504c Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:50:36 +0200
-Subject: [PATCH 08/19] always return success with -t option
+Subject: [PATCH 08/17] always return success with -t option
 
 ---
  main.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/main.c b/main.c
-index 1500654f..538ee6b4 100644
+index 333fe3fc..7c420ced 100644
 --- a/main.c
 +++ b/main.c
 @@ -171,6 +171,7 @@ quit_timeout(void *arg)
@@ -20,5 +20,5 @@ index 1500654f..538ee6b4 100644
  }
  
 -- 
-2.37.3
+2.41.0
 

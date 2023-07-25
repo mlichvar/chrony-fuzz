@@ -1,17 +1,17 @@
-From bc0d231335f0e713005ca88e17d764bf9139ac8d Mon Sep 17 00:00:00 2001
+From 06e4088d8dc2c91a00507c4063125607e509c99e Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:48:12 +0200
-Subject: [PATCH 02/19] defer afl initialization
+Subject: [PATCH 02/17] defer afl initialization
 
 ---
  main.c | 10 ++++++++++
  1 file changed, 10 insertions(+)
 
 diff --git a/main.c b/main.c
-index c40b5e4b..e738236d 100644
+index 32337078..ae9d2544 100644
 --- a/main.c
 +++ b/main.c
-@@ -455,6 +455,11 @@ int main
+@@ -460,6 +460,11 @@ int main
  
    LOG_Initialise();
  
@@ -23,7 +23,7 @@ index c40b5e4b..e738236d 100644
    /* Parse long command-line options */
    for (optind = 1; optind < argc; optind++) {
      if (!strcmp("--help", argv[optind])) {
-@@ -654,6 +659,11 @@ int main
+@@ -663,6 +668,11 @@ int main
    TMC_Initialise();
    SMT_Initialise();
  
@@ -36,5 +36,5 @@ index c40b5e4b..e738236d 100644
    initialised = 1;
  
 -- 
-2.37.3
+2.41.0
 

@@ -1,20 +1,52 @@
-From da26ea192501c9637ad09a92800d8ca50501a453 Mon Sep 17 00:00:00 2001
+From 45622871f0e432345b4f36e1bb8ee63a6b9b9589 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:47:12 +0200
-Subject: [PATCH 16/19] add option to directly feed some functions
+Subject: [PATCH 15/17] add option to directly feed some functions
 
 ---
+ client.c       | 20 ++++++++++++++++++++
  configure      |  2 ++
  main.c         | 22 ++++++++++++++++++++++
  ntp_io_linux.c | 12 ++++++++++++
  privops.c      | 49 +++++++++++++++++++++++++++----------------------
- 4 files changed, 63 insertions(+), 22 deletions(-)
+ 5 files changed, 83 insertions(+), 22 deletions(-)
 
+diff --git a/client.c b/client.c
+index aa9bd689..ee80b565 100644
+--- a/client.c
++++ b/client.c
+@@ -3439,6 +3439,26 @@ main(int argc, char **argv)
+     if (!strcmp("--help", argv[optind])) {
+       print_help(progname);
+       return 0;
++    } else if (!strcmp("--internal-fuzz", argv[optind])) {
++      char buf[1024], m;
++      time_t now, date;
++      int64_t now64;
++
++      if (fread(&m, 1, 1, stdin) != 1)
++        return 0;
++
++      switch (m) {
++        case 'g':
++          if (fread(&now64, sizeof (now64), 1, stdin) != 1)
++            return 0;
++          now = now64;
++          if (!fgets(buf, sizeof (buf), stdin))
++            return 0;
++          date = get_date(buf, &now);
++          printf("get_date(\"%s\", %"PRId64") = %"PRId64"\n", buf, (int64_t)now, (int64_t)date);
++          break;
++      }
++      return 0;
+     } else if (!strcmp("--version", argv[optind])) {
+       print_version();
+       return 0;
 diff --git a/configure b/configure
-index c3ff53d4..15d46fdb 100755
+index 5ae8149b..d9f44575 100755
 --- a/configure
 +++ b/configure
-@@ -813,6 +813,8 @@ then
+@@ -825,6 +825,8 @@ then
    EXTRA_LIBS="$EXTRA_LIBS -lseccomp"
  fi
  
@@ -24,10 +56,10 @@ index c3ff53d4..15d46fdb 100755
    EXTRA_OBJECTS="$EXTRA_OBJECTS privops.o"
    add_def PRIVOPS_HELPER
 diff --git a/main.c b/main.c
-index 538ee6b4..73cd01a6 100644
+index 7c420ced..aeeaf3bb 100644
 --- a/main.c
 +++ b/main.c
-@@ -440,6 +440,9 @@ parse_int_arg(const char *arg)
+@@ -445,6 +445,9 @@ parse_int_arg(const char *arg)
  
  /* ================================================== */
  
@@ -37,7 +69,7 @@ index 538ee6b4..73cd01a6 100644
  int main
  (int argc, char **argv)
  {
-@@ -470,6 +473,25 @@ int main
+@@ -475,6 +478,25 @@ int main
      } else if (!strcmp("--version", argv[optind])) {
        print_version();
        return 0;
@@ -64,10 +96,10 @@ index 538ee6b4..73cd01a6 100644
    }
  
 diff --git a/ntp_io_linux.c b/ntp_io_linux.c
-index 004a4d49..14cd242d 100644
+index 6988a286..cb12e6e1 100644
 --- a/ntp_io_linux.c
 +++ b/ntp_io_linux.c
-@@ -735,6 +735,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
+@@ -709,6 +709,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
  
  /* ================================================== */
  
@@ -238,5 +270,5 @@ index 3fb5cbd5..0f213606 100644
  
  /* ======================================================================= */
 -- 
-2.37.3
+2.41.0
 

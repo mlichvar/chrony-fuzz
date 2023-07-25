@@ -1,17 +1,17 @@
-From abb964907b47e1e8c10fea71779f70e67da9cb75 Mon Sep 17 00:00:00 2001
+From 2734530392aa6854dac4ca3faec0a18908d04022 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:49:21 +0200
-Subject: [PATCH 03/19] catch fatal errors
+Subject: [PATCH 03/17] catch fatal errors
 
 ---
  logging.c | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/logging.c b/logging.c
-index d858d2ad..16302577 100644
+index 22c326c0..53aef61c 100644
 --- a/logging.c
 +++ b/logging.c
-@@ -180,6 +180,9 @@ void LOG_Message(LOG_Severity severity,
+@@ -185,6 +185,9 @@ void LOG_Message(LOG_Severity severity,
          system_log = 0;
          log_message(1, severity, buf);
        }
@@ -22,5 +22,5 @@ index d858d2ad..16302577 100644
        break;
      default:
 -- 
-2.37.3
+2.41.0
 

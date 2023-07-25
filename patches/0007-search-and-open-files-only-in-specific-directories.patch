@@ -1,7 +1,7 @@
-From cceef3a49e2d08a4c7f920a80be9ff4815f1f7f9 Mon Sep 17 00:00:00 2001
+From 6684cb09f4e5a7e6242663abc3563620e8c9c6df Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:49:59 +0200
-Subject: [PATCH 07/19] search and open files only in specific directories
+Subject: [PATCH 07/17] search and open files only in specific directories
 
 ---
  conf.c | 13 +++++++++++++
@@ -9,10 +9,10 @@ Subject: [PATCH 07/19] search and open files only in specific directories
  2 files changed, 19 insertions(+)
 
 diff --git a/conf.c b/conf.c
-index 8dd27436..9c8ea6e8 100644
+index f9840609..1801fb42 100644
 --- a/conf.c
 +++ b/conf.c
-@@ -1525,6 +1525,14 @@ compare_basenames(const void *a, const void *b)
+@@ -1530,6 +1530,14 @@ compare_basenames(const void *a, const void *b)
  
  /* ================================================== */
  
@@ -27,7 +27,7 @@ index 8dd27436..9c8ea6e8 100644
  static int
  search_dirs(char *line, const char *suffix, void (*file_handler)(const char *path))
  {
-@@ -1540,6 +1548,8 @@ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *pat
+@@ -1545,6 +1553,8 @@ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *pat
    for (i = 0; i < n_dirs; i++) {
      if (snprintf(buf, sizeof (buf), "%s/*%s", dirs[i], suffix) >= sizeof (buf))
        assert(0);
@@ -36,7 +36,7 @@ index 8dd27436..9c8ea6e8 100644
      if (glob(buf, GLOB_NOSORT | (i > 0 ? GLOB_APPEND : 0), NULL, &gl) != 0)
        ;
    }
-@@ -1596,6 +1606,9 @@ parse_include(char *line)
+@@ -1601,6 +1611,9 @@ parse_include(char *line)
  
    check_number_of_args(line, 1);
  
@@ -47,10 +47,10 @@ index 8dd27436..9c8ea6e8 100644
  #ifdef GLOB_NOMAGIC
                  GLOB_NOMAGIC |
 diff --git a/util.c b/util.c
-index 3a9b00d0..ffa80c9e 100644
+index cb0d8750..f46115c6 100644
 --- a/util.c
 +++ b/util.c
-@@ -1269,6 +1269,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1342,6 +1342,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
    if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
      return NULL;
  
@@ -64,5 +64,5 @@ index 3a9b00d0..ffa80c9e 100644
    if (env && strcmp(env, path) == 0) {
      DEBUG_LOG("Opened %s as stdin", path);
 -- 
-2.37.3
+2.41.0
 

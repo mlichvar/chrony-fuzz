@@ -1,17 +1,17 @@
-From fdc85a67869aecca8933b3e0777ed06c8e7a5994 Mon Sep 17 00:00:00 2001
+From 4c819622327de91b68d4c908b04309111194a4b2 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 19 Apr 2022 13:34:51 +0200
-Subject: [PATCH 11/19] don't stop in chronyc on error
+Subject: [PATCH 11/17] don't stop in chronyc on error
 
 ---
  client.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/client.c b/client.c
-index b318001b..b0941878 100644
+index ed260d53..aa9bd689 100644
 --- a/client.c
 +++ b/client.c
-@@ -3280,6 +3280,7 @@ process_args(int argc, char **argv, int multi)
+@@ -3360,6 +3360,7 @@ process_args(int argc, char **argv, int multi)
        continue;
  
      ret = process_line(line);
@@ -19,7 +19,7 @@ index b318001b..b0941878 100644
      if (!ret || quit)
        break;
  
-@@ -3437,6 +3438,7 @@ main(int argc, char **argv)
+@@ -3521,6 +3522,7 @@ main(int argc, char **argv)
        line = read_line();
        if (line && !quit) {
          ret = process_line(line);
@@ -28,5 +28,5 @@ index b318001b..b0941878 100644
  	/* supply the final '\n' when user exits via ^D */
          if( on_terminal ) printf("\n");
 -- 
-2.37.3
+2.41.0
 
