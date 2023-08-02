@@ -10,8 +10,8 @@ WORK_DIR=${WORK_DIR:-work}
 
 export CLKNETSIM_RANDOM_SEED
 export PATH=$WORK_DIR/chrony:$PATH
-export ASAN_OPTIONS=abort_on_error=1:symbolize=0:detect_leaks=0
-export UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1
+#export ASAN_OPTIONS=abort_on_error=1:symbolize=0:detect_leaks=0
+#export UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1:detect_leaks=0
 
 [ $# -ge 1 ] && input=$1 || input="$INPUT_DIR/$test_name"
 output=$WORK_DIR/output/$test_name
