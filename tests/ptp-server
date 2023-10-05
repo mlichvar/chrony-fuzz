@@ -6,7 +6,7 @@ export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=319 CLKNETSIM_FUZZ_START=5.1
 
 seed_command=(chronyd -d -t 5 \
 	'ptpport 319' \
-	'server node1.net1.clk port 319 extfield F323')
+	'server node1.net1.clk port 319 extfield F323 extfield F324')
 
 run_test chronyd -d -d \
 	'allow' \
