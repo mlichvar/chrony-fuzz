@@ -1,0 +1,16 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=3 CLKNETSIM_FUZZ_PORT=319
+export CLKNETSIM_TIMESTAMPING=2
+
+seed_command=(chronyd -d \
+	'allow' \
+	'local' \
+	'ptpport 319')
+
+run_test chronyd -d -d -t 10 \
+	'hwtimestamp eth0' \
+	'ptpport 319' \
+	'server 192.168.123.2 iburst port 319 extfield F324'
