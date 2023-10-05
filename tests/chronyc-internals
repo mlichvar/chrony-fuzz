@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=1
+
+seeds=("g1234123401 Nov 1980" "g12341234now")
+
+run_test chronyc --internal-fuzz
