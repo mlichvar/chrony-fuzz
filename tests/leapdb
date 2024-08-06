@@ -1,0 +1,14 @@
+#!/bin/bash
+
+. common.test
+
+export CLKNETSIM_FUZZ_MODE=4 CLKNETSIM_FUZZ_PORT=1
+export TEST_EARLY_AFL_INIT=1
+export TEST_STDIN_FILE="data/emptydir/leap-seconds.list"
+
+seeds=("$(cat "$WORK_DIR/chrony/test/unit/leapdb.list")")
+
+run_test chronyd -d -t 1 -d \
+	'allow' \
+	'local' \
+	'leapseclist data/emptydir/leap-seconds.list'
