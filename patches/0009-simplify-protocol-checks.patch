@@ -1,4 +1,4 @@
-From 11e011f2b3a9e54d81194821576a6da55737e855 Mon Sep 17 00:00:00 2001
+From ade180677e0de3ab10ad2686b7664e779b84b6e9 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:25:35 +0200
 Subject: [PATCH 09/17] simplify protocol checks
@@ -13,10 +13,10 @@ Subject: [PATCH 09/17] simplify protocol checks
  6 files changed, 32 insertions(+), 11 deletions(-)
 
 diff --git a/client.c b/client.c
-index 7cfefba2..e6035d55 100644
+index d9f60de4..8f88b9f2 100644
 --- a/client.c
 +++ b/client.c
-@@ -1329,7 +1329,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
+@@ -1353,7 +1353,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
              reply->res1 != 0 ||
              reply->res2 != 0 ||
              reply->command != request->command ||
@@ -26,10 +26,10 @@ index 7cfefba2..e6035d55 100644
            continue;
          }
 diff --git a/cmdmon.c b/cmdmon.c
-index 9adc9d6e..a27dbe88 100644
+index 49583b89..0c4101b6 100644
 --- a/cmdmon.c
 +++ b/cmdmon.c
-@@ -1500,7 +1500,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
+@@ -1531,7 +1531,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
    tx_message.command = rx_message.command;
    tx_message.reply = htons(RPY_NULL);
    tx_message.status = htons(STT_SUCCESS);
@@ -52,7 +52,7 @@ index 9225e6cd..bd4eb574 100644
  
  /* ================================================== */
 diff --git a/ntp_core.c b/ntp_core.c
-index 2b2b78e6..c7dbe404 100644
+index 9ae1432c..377022ef 100644
 --- a/ntp_core.c
 +++ b/ntp_core.c
 @@ -1226,7 +1226,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
@@ -138,7 +138,7 @@ index 2b2b78e6..c7dbe404 100644
        kod_rate = 1;
    }
  
-@@ -2248,7 +2261,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2253,7 +2266,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
  
      /* Test D requires that the source is not synchronised to us and is not us
         to prevent a synchronisation loop */
@@ -148,7 +148,7 @@ index 2b2b78e6..c7dbe404 100644
    } else {
      remote_interval = local_interval = response_time = 0.0;
      sample.offset = sample.peer_delay = sample.peer_dispersion = 0.0;
-@@ -2275,6 +2289,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2280,6 +2294,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    if ((inst->mode == MODE_CLIENT && valid_packet && !inst->valid_rx) ||
        (inst->mode == MODE_ACTIVE && valid_packet &&
         (!inst->valid_rx ||
@@ -156,7 +156,7 @@ index 2b2b78e6..c7dbe404 100644
          UTI_CompareNtp64(&inst->remote_ntp_tx, &message->transmit_ts) < 0))) {
      inst->remote_ntp_rx = message->receive_ts;
      inst->remote_ntp_tx = message->transmit_ts;
-@@ -2309,6 +2324,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2315,6 +2330,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    } else if (inst->mode == MODE_ACTIVE &&
               test1 && !UTI_IsZeroNtp64(&message->transmit_ts) && test5 &&
               (!inst->updated_init_timestamps ||
@@ -164,7 +164,7 @@ index 2b2b78e6..c7dbe404 100644
                UTI_CompareNtp64(&inst->init_remote_ntp_tx, &message->transmit_ts) < 0)) {
      inst->init_remote_ntp_tx = message->transmit_ts;
      inst->init_local_rx = *rx_ts;
-@@ -2730,6 +2746,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
+@@ -2749,6 +2765,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
      local_ntp_rx = &ntp_rx;
      zero_local_timestamp(&local_tx);
      interleaved = CLG_GetNtpTxTimestamp(&ntp_rx, &local_tx.ts, &local_tx.source);
@@ -173,7 +173,7 @@ index 2b2b78e6..c7dbe404 100644
      tx_ts = &local_tx;
      if (interleaved)
 diff --git a/ntp_io.c b/ntp_io.c
-index ec2fd7b4..f2571f38 100644
+index 7a034f72..556c8e61 100644
 --- a/ntp_io.c
 +++ b/ntp_io.c
 @@ -513,6 +513,9 @@ NIO_UnwrapMessage(SCK_Message *message, int sock_fd, double *net_correction)
@@ -183,9 +183,9 @@ index ec2fd7b4..f2571f38 100644
 +  msg->header.length = htons(message->length);
 +  msg->tlv_header.length = htons(message->length - PTP_NTP_PREFIX_LENGTH);
 +
-   if (msg->header.type != PTP_TYPE_DELAY_REQ || msg->header.version != PTP_VERSION ||
-       ntohs(msg->header.length) != message->length ||
-       msg->header.domain != PTP_DOMAIN_NTP ||
+   if ((msg->header.type != PTP_TYPE_DELAY_REQ && msg->header.type != PTP_TYPE_SYNC) ||
+       (msg->header.version != PTP_VERSION_2 &&
+        (msg->header.version != PTP_VERSION_2_1 || msg->header.min_sdoid != 0)) ||
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
 index 2f4b7283..a799fad2 100644
 --- a/nts_ntp_client.c
@@ -226,5 +226,5 @@ index 2f4b7283..a799fad2 100644
        inst->nak_response = 1;
        return 0;
 -- 
-2.41.0
+2.45.2
 

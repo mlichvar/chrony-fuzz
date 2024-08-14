@@ -1,4 +1,4 @@
-From 1b22d4757644a1d6b4862c153f76c2edf2894294 Mon Sep 17 00:00:00 2001
+From e599e5135cc1735bd01a105062b7e4c869f35361 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:54:03 +0200
 Subject: [PATCH 12/17] bypass signd
@@ -8,10 +8,10 @@ Subject: [PATCH 12/17] bypass signd
  1 file changed, 10 insertions(+)
 
 diff --git a/ntp_signd.c b/ntp_signd.c
-index 77b3249a..e63cd62e 100644
+index e52c8f51..90efaf90 100644
 --- a/ntp_signd.c
 +++ b/ntp_signd.c
-@@ -131,7 +131,11 @@ open_socket(void)
+@@ -134,7 +134,11 @@ open_socket(void)
      return 0;
    }
  
@@ -22,8 +22,8 @@ index 77b3249a..e63cd62e 100644
 +#endif
    if (sock_fd < 0) {
      sock_fd = INVALID_SOCK_FD;
-     return 0;
-@@ -195,8 +199,14 @@ read_write_socket(int sock_fd, int event, void *anything)
+ 
+@@ -208,8 +212,14 @@ read_write_socket(int sock_fd, int event, void *anything)
      if (!inst->sent)
        SCH_GetLastEventTime(NULL, NULL, &inst->request_ts);
  
@@ -39,5 +39,5 @@ index 77b3249a..e63cd62e 100644
      if (s < 0) {
        close_socket();
 -- 
-2.41.0
+2.45.2
 
