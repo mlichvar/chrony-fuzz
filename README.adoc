@@ -1,16 +1,16 @@
 = chrony-fuzz
 
-This repository contains patches, scripts, and input files for fuzzing
-https://chrony.tuxfamily.org[chrony] using https://aflplus.plus[AFL++]
-and https://github.com/mlichvar/clknetsim[clknetsim].
+This repository contains patches and scripts for fuzzing
+https://chrony-project.org[chrony] using https://aflplus.plus[AFL++]
+and https://gitlab.com/chrony/clknetsim[clknetsim].
 
 == Example usage
 
 ```
 $ cat > env <<EOF
 export AFL_PATH=$HOME/local/AFLplusplus
-export CHRONY_GIT=https://github.com/mlichvar/chrony.git
-export CLKNETSIM_GIT=https://github.com/mlichvar/clknetsim.git
+export CHRONY_GIT=https://gitlab.com/chrony/chrony.git
+export CLKNETSIM_GIT=https://gitlab.com/chrony/clknetsim.git
 export WORK_DIR=work
 EOF
 $ scripts/prep
