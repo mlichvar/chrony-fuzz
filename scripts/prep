@@ -25,7 +25,13 @@ rm -rf chrony
 git clone --depth 1 "$CHRONY_GIT"
 pushd chrony
 git checkout "$CHRONY_REV"
-git am "$patch_dir"/*.patch
+if [ $# -gt 0 ]; then
+	for p; do
+		git am "$patch_dir/../$p"
+	done
+else
+	git am "$patch_dir"/*.patch
+fi
 popd
 
 popd
