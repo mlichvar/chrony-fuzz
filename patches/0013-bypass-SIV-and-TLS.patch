@@ -1,4 +1,4 @@
-From 50b309849a8188871c3952f8510cd7dc2bea8f0f Mon Sep 17 00:00:00 2001
+From e57ad799961f5e456dadc79435fa240c1fdd0307 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:06 +0200
 Subject: [PATCH 13/17] bypass SIV and TLS
@@ -13,7 +13,7 @@ Subject: [PATCH 13/17] bypass SIV and TLS
  6 files changed, 64 insertions(+), 4 deletions(-)
 
 diff --git a/configure b/configure
-index 225137f7..5ae8149b 100755
+index 4900fa23..fc7b652b 100755
 --- a/configure
 +++ b/configure
 @@ -1006,7 +1006,7 @@ if [ $feat_ntp = "1" ] && [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
@@ -26,10 +26,10 @@ index 225137f7..5ae8149b 100755
            return gnutls_aead_cipher_init((void *)1, GNUTLS_CIPHER_AES_128_SIV, (void *)2);'
        then
 diff --git a/nts_ke_server.c b/nts_ke_server.c
-index 5e25c504..a2831ee9 100644
+index 5f10bc17..80dc2d92 100644
 --- a/nts_ke_server.c
 +++ b/nts_ke_server.c
-@@ -502,7 +502,7 @@ generate_key(int index)
+@@ -528,7 +528,7 @@ generate_key(int index)
       with cookies encrypted with those keys will not work if the new algorithm
       produces longer cookies (i.e. response would be longer than request).
       Switching from AES-SIV-CMAC-256 to AES-128-GCM-SIV is ok. */
@@ -38,7 +38,7 @@ index 5e25c504..a2831ee9 100644
                AEAD_AES_128_GCM_SIV : AEAD_AES_SIV_CMAC_256;
  
    key = &server_keys[index];
-@@ -518,6 +518,7 @@ generate_key(int index)
+@@ -544,6 +544,7 @@ generate_key(int index)
    /* Encode the index in the lowest bits of the ID */
    key->id &= -1U << KEY_ID_INDEX_BITS;
    key->id |= index;
@@ -46,7 +46,7 @@ index 5e25c504..a2831ee9 100644
  
    update_key_siv(key, algorithm);
  
-@@ -932,6 +933,7 @@ NKS_GenerateCookie(NKE_Context *context, NKE_Cookie *cookie)
+@@ -960,6 +961,7 @@ NKS_GenerateCookie(NKE_Context *context, NKE_Cookie *cookie)
    if (key->nonce_length > sizeof (cookie->cookie) - sizeof (*header))
      assert(0);
    UTI_GetRandomBytes(nonce, key->nonce_length);
@@ -54,7 +54,7 @@ index 5e25c504..a2831ee9 100644
  
    plaintext_length = context->c2s.length + context->s2c.length;
    assert(plaintext_length <= sizeof (plaintext));
-@@ -979,7 +981,7 @@ NKS_DecodeCookie(NKE_Cookie *cookie, NKE_Context *context)
+@@ -1007,7 +1009,7 @@ NKS_DecodeCookie(NKE_Cookie *cookie, NKE_Context *context)
  
    key_id = ntohl(header->key_id);
    key = &server_keys[key_id % MAX_SERVER_KEYS];
@@ -64,7 +64,7 @@ index 5e25c504..a2831ee9 100644
      return 0;
    }
 diff --git a/nts_ke_session.c b/nts_ke_session.c
-index 2ae1e915..a84e0dd1 100644
+index 3d788055..a494c34f 100644
 --- a/nts_ke_session.c
 +++ b/nts_ke_session.c
 @@ -217,6 +217,10 @@ create_tls_session(int server_mode, int sock_fd, const char *server_name,
@@ -211,15 +211,15 @@ index 2ae1e915..a84e0dd1 100644
  }
  
  /* ================================================== */
-@@ -886,6 +926,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
-     return 0;
-   }
+@@ -900,6 +940,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm algorithm, SIV_Algorithm exporter
+   context.next_protocol = htons(next_protocol);
+   context.algorithm = htons(exporter_algorithm);
  
 +#if 0
+   context.is_s2c = 0;
    if (gnutls_prf_rfc5705(inst->tls_session,
                           sizeof (NKE_EXPORTER_LABEL) - 1, NKE_EXPORTER_LABEL,
-                          sizeof (NKE_EXPORTER_CONTEXT_C2S) - 1, NKE_EXPORTER_CONTEXT_C2S,
-@@ -897,6 +938,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm siv, NKE_Key *c2s, NKE_Key *s2c)
+@@ -917,6 +958,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm algorithm, SIV_Algorithm exporter
      DEBUG_LOG("Could not export key");
      return 0;
    }
@@ -231,10 +231,10 @@ index 2ae1e915..a84e0dd1 100644
    c2s->length = length;
    s2c->length = length;
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
-index a799fad2..62953955 100644
+index 83a43b4e..07d9dbe5 100644
 --- a/nts_ntp_client.c
 +++ b/nts_ntp_client.c
-@@ -302,6 +302,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
+@@ -318,6 +318,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
    UTI_GetRandomBytes(inst->uniq_id, sizeof (inst->uniq_id));
    inst->uniq_id[0] &= ~1;
    UTI_GetRandomBytes(inst->nonce, sizeof (inst->nonce));
@@ -243,7 +243,7 @@ index a799fad2..62953955 100644
    /* Get new cookies if there are not any, or they are no longer usable */
    if (!check_cookies(inst)) {
 diff --git a/nts_ntp_server.c b/nts_ntp_server.c
-index be69a2ba..d908bfbd 100644
+index 5d46c296..a2029c1d 100644
 --- a/nts_ntp_server.c
 +++ b/nts_ntp_server.c
 @@ -231,6 +231,7 @@ NNS_CheckRequestAuth(NTP_Packet *packet, NTP_PacketInfo *info, uint32_t *kod)
@@ -298,5 +298,5 @@ index a8cba490..13aee683 100644
    return 1;
  }
 -- 
-2.41.0
+2.46.0
 
