@@ -35,6 +35,8 @@
 "stratum"
 "trust"
 "version"
+"waitsynced"
+"waitunsynced"
 "xleave"
 "server"
 "peer"

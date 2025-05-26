@@ -100,5 +100,7 @@
 "trust"
 "version"
 "waitsync"
+"waitsynced"
+"waitunsynced"
 "writertc"
 "xleave"
