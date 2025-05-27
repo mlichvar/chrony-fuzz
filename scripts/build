@@ -76,7 +76,6 @@ if [ -z "$NO_CLEAN" ]; then
 	./configure \
 		$([ -z "$NO_DEBUG" ] && echo "--enable-debug") \
 		--enable-ntp-signd \
-		--disable-asyncdns \
 		--with-ntp-era="$(date -u -d 'Jan 1 1960' +'%s')" \
 		$extra_conf_opts
 	make clean
