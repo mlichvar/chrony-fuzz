@@ -2,6 +2,7 @@
 
 . common.test
 
+export ASAN_OPTIONS=${ASAN_OPTIONS:-abort_on_error=1:symbolize=0}:detect_leaks=0
 export CLKNETSIM_FUZZ_MODE=1 CLKNETSIM_FUZZ_PORT=1
 export TEST_EARLY_AFL_INIT=1
 export TEST_FATAL_SUCCESS=1
