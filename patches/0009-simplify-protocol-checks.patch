@@ -1,7 +1,7 @@
-From ade180677e0de3ab10ad2686b7664e779b84b6e9 Mon Sep 17 00:00:00 2001
+From 011e7a7d6f3580b7b015c0c0ae0cac128abdd4eb Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:25:35 +0200
-Subject: [PATCH 09/17] simplify protocol checks
+Subject: [PATCH 09/18] simplify protocol checks
 
 ---
  client.c         |  2 +-
@@ -13,10 +13,10 @@ Subject: [PATCH 09/17] simplify protocol checks
  6 files changed, 32 insertions(+), 11 deletions(-)
 
 diff --git a/client.c b/client.c
-index d9f60de4..8f88b9f2 100644
+index fd227e84..55ea70c2 100644
 --- a/client.c
 +++ b/client.c
-@@ -1353,7 +1353,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
+@@ -1360,7 +1360,7 @@ submit_request(CMD_Request *request, CMD_Reply *reply)
              reply->res1 != 0 ||
              reply->res2 != 0 ||
              reply->command != request->command ||
@@ -26,10 +26,10 @@ index d9f60de4..8f88b9f2 100644
            continue;
          }
 diff --git a/cmdmon.c b/cmdmon.c
-index 49583b89..0c4101b6 100644
+index a651c82c..976ee44f 100644
 --- a/cmdmon.c
 +++ b/cmdmon.c
-@@ -1531,7 +1531,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
+@@ -1668,7 +1668,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
    tx_message.command = rx_message.command;
    tx_message.reply = htons(RPY_NULL);
    tx_message.status = htons(STT_SUCCESS);
@@ -39,23 +39,23 @@ index 49583b89..0c4101b6 100644
    if (rx_message.version != PROTO_VERSION_NUMBER) {
      DEBUG_LOG("Command packet has invalid version (%d != %d)",
 diff --git a/keys.c b/keys.c
-index 9225e6cd..bd4eb574 100644
+index c86685f9..bd4eb574 100644
 --- a/keys.c
 +++ b/keys.c
 @@ -405,7 +405,7 @@ check_auth(Key *key, const void *data, int data_len,
  
    hash_len = generate_auth(key, data, data_len, buf, sizeof (buf));
  
--  return MIN(hash_len, trunc_len) == auth_len && !memcmp(buf, auth, auth_len);
+-  return MIN(hash_len, trunc_len) == auth_len && UTI_IsMemoryEqual(buf, auth, auth_len);
 +  return MIN(hash_len, trunc_len) == auth_len && (auth[0] & 1);
  }
  
  /* ================================================== */
 diff --git a/ntp_core.c b/ntp_core.c
-index 9ae1432c..377022ef 100644
+index fa6acc34..be05f331 100644
 --- a/ntp_core.c
 +++ b/ntp_core.c
-@@ -1226,7 +1226,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+@@ -1228,7 +1228,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
    message.precision = precision;
    message.root_delay = UTI_DoubleToNtp32(our_root_delay);
    message.root_dispersion = UTI_DoubleToNtp32(our_root_dispersion);
@@ -64,7 +64,7 @@ index 9ae1432c..377022ef 100644
  
    /* Now fill in timestamps */
  
-@@ -1305,6 +1305,12 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
+@@ -1307,6 +1307,12 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
      message.receive_ts.lo |= htonl(1);
      message.transmit_ts.lo &= ~htonl(1);
    }
@@ -77,7 +77,7 @@ index 9ae1432c..377022ef 100644
  
    /* Generate the authentication data */
    if (auth) {
-@@ -1537,7 +1543,8 @@ is_zero_data(unsigned char *data, int length)
+@@ -1539,7 +1545,8 @@ is_zero_data(unsigned char *data, int length)
  static int
  is_exp_ef(void *body, int body_length, int expected_body_length, uint32_t magic)
  {
@@ -87,7 +87,7 @@ index 9ae1432c..377022ef 100644
  }
  
  /* ================================================== */
-@@ -2028,6 +2035,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2030,6 +2037,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    /* Test 1 checks for duplicate packet */
    test1 = UTI_CompareNtp64(&message->receive_ts, &inst->remote_ntp_rx) ||
            UTI_CompareNtp64(&message->transmit_ts, &inst->remote_ntp_tx);
@@ -95,7 +95,7 @@ index 9ae1432c..377022ef 100644
  
    /* Test 2 checks for bogus packet in the basic and interleaved modes.  This
       ensures the source is responding to the latest packet we sent to it. */
-@@ -2036,12 +2044,15 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2038,12 +2046,15 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
             !UTI_CompareNtp64(&message->originate_ts, &inst->local_ntp_rx);
    test2 = test2n || test2i;
    interleaved_packet = !test2n && test2i;
@@ -111,7 +111,7 @@ index 9ae1432c..377022ef 100644
  
    /* Test 4 would check for denied access.  It would always pass as this
       function is called only for known sources. */
-@@ -2050,6 +2061,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2052,6 +2063,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
       which had to pass all these tests before, avoid authenticating it for
       the second time (that is not allowed in the NTS code). */
    test5 = saved || NAU_CheckResponseAuth(inst->auth, message, info);
@@ -119,7 +119,7 @@ index 9ae1432c..377022ef 100644
  
    /* Test 6 checks for unsynchronised server */
    test6 = pkt_leap != LEAP_Unsynchronised &&
-@@ -2073,7 +2085,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2075,7 +2087,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
       response to the request, when at least one good response has already been
       accepted to avoid incorrectly confirming a tentative source. */
    if (valid_packet && synced_packet && !saved && !inst->valid_rx &&
@@ -129,7 +129,7 @@ index 9ae1432c..377022ef 100644
        inst->report.total_good_count > 0) {
      if (save_response(inst, local_addr, rx_ts, message, info))
        return 1;
-@@ -2083,7 +2096,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2085,7 +2098,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    kod_rate = 0;
    if (test1 && test2 && test5 && pkt_leap == LEAP_Unsynchronised &&
        message->stratum == NTP_INVALID_STRATUM) {
@@ -138,7 +138,7 @@ index 9ae1432c..377022ef 100644
        kod_rate = 1;
    }
  
-@@ -2253,7 +2266,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2255,7 +2268,8 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
  
      /* Test D requires that the source is not synchronised to us and is not us
         to prevent a synchronisation loop */
@@ -148,7 +148,7 @@ index 9ae1432c..377022ef 100644
    } else {
      remote_interval = local_interval = response_time = 0.0;
      sample.offset = sample.peer_delay = sample.peer_dispersion = 0.0;
-@@ -2280,6 +2294,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2282,6 +2296,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    if ((inst->mode == MODE_CLIENT && valid_packet && !inst->valid_rx) ||
        (inst->mode == MODE_ACTIVE && valid_packet &&
         (!inst->valid_rx ||
@@ -156,7 +156,7 @@ index 9ae1432c..377022ef 100644
          UTI_CompareNtp64(&inst->remote_ntp_tx, &message->transmit_ts) < 0))) {
      inst->remote_ntp_rx = message->receive_ts;
      inst->remote_ntp_tx = message->transmit_ts;
-@@ -2315,6 +2330,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
+@@ -2317,6 +2332,7 @@ process_response(NCR_Instance inst, int saved, NTP_Local_Address *local_addr,
    } else if (inst->mode == MODE_ACTIVE &&
               test1 && !UTI_IsZeroNtp64(&message->transmit_ts) && test5 &&
               (!inst->updated_init_timestamps ||
@@ -164,7 +164,7 @@ index 9ae1432c..377022ef 100644
                UTI_CompareNtp64(&inst->init_remote_ntp_tx, &message->transmit_ts) < 0)) {
      inst->init_remote_ntp_tx = message->transmit_ts;
      inst->init_local_rx = *rx_ts;
-@@ -2749,6 +2765,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
+@@ -2750,6 +2766,7 @@ NCR_ProcessRxUnknown(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_a
      local_ntp_rx = &ntp_rx;
      zero_local_timestamp(&local_tx);
      interleaved = CLG_GetNtpTxTimestamp(&ntp_rx, &local_tx.ts, &local_tx.source);
@@ -187,10 +187,10 @@ index 7a034f72..556c8e61 100644
        (msg->header.version != PTP_VERSION_2 &&
         (msg->header.version != PTP_VERSION_2_1 || msg->header.min_sdoid != 0)) ||
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
-index 2f4b7283..a799fad2 100644
+index 2c3464fe..b11a6a07 100644
 --- a/nts_ntp_client.c
 +++ b/nts_ntp_client.c
-@@ -300,6 +300,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
+@@ -317,6 +317,7 @@ NNC_PrepareForAuth(NNC_Instance inst)
    /* Prepare data for the next request and invalidate any responses to the
       previous request */
    UTI_GetRandomBytes(inst->uniq_id, sizeof (inst->uniq_id));
@@ -198,7 +198,7 @@ index 2f4b7283..a799fad2 100644
    UTI_GetRandomBytes(inst->nonce, sizeof (inst->nonce));
  
    /* Get new cookies if there are not any, or they are no longer usable */
-@@ -408,7 +409,7 @@ extract_cookies(NNC_Instance inst, unsigned char *plaintext, int length)
+@@ -425,7 +426,7 @@ extract_cookies(NNC_Instance inst, unsigned char *plaintext, int length)
                                &ef_length, &ef_type, &ef_body, &ef_body_length))
        return 0;
  
@@ -207,7 +207,7 @@ index 2f4b7283..a799fad2 100644
        continue;
  
      if (ef_length < NTP_MIN_EF_LENGTH || ef_body_length > sizeof (inst->cookies[0].cookie)) {
-@@ -470,7 +471,7 @@ NNC_CheckResponseAuth(NNC_Instance inst, NTP_Packet *packet,
+@@ -487,7 +488,7 @@ NNC_CheckResponseAuth(NNC_Instance inst, NTP_Packet *packet,
      switch (ef_type) {
        case NTP_EF_NTS_UNIQUE_IDENTIFIER:
          if (ef_body_length != sizeof (inst->uniq_id) ||
@@ -216,7 +216,7 @@ index 2f4b7283..a799fad2 100644
            DEBUG_LOG("Invalid uniq id");
            return 0;
          }
-@@ -501,7 +502,7 @@ NNC_CheckResponseAuth(NNC_Instance inst, NTP_Packet *packet,
+@@ -518,7 +519,7 @@ NNC_CheckResponseAuth(NNC_Instance inst, NTP_Packet *packet,
  
    if (!has_valid_uniq_id || !has_valid_auth) {
      if (has_valid_uniq_id && packet->stratum == NTP_INVALID_STRATUM &&
@@ -226,5 +226,5 @@ index 2f4b7283..a799fad2 100644
        inst->nak_response = 1;
        return 0;
 -- 
-2.45.2
+2.49.0
 
