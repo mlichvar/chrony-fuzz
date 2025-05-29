@@ -9,7 +9,6 @@ do
 		"" \
 		"--without-aes-gcm-siv" \
 		"--disable-nts" \
-		"--disable-ntp" \
 		"--disable-ipv6"
 	do
 		scripts/build $build_opts $extra_conf_opts
