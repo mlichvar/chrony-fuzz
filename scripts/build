@@ -4,6 +4,8 @@ set -e
 
 [ -f env ] && . ./env
 
+rm -f env-build
+
 WORK_DIR=${WORK_DIR:-work}
 
 if [ $# -lt 2 ]; then
@@ -86,3 +88,10 @@ make "-j$(nproc)"
 popd
 
 popd
+
+cat > env.build <<EOF
+BUILD_CC="$(basename "$chrony_cc")"
+BUILD_SAN="$san"
+BUILD_CFLAGS="$cflags"
+BUILD_LDFLAGS="$ldflags"
+EOF

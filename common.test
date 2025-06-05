@@ -1,6 +1,7 @@
 #!/bin/bash
 
 [ -f env ] && . ./env
+[ -f env.build ] && . ./env.build
 
 test_name=$(basename "$0")
 
