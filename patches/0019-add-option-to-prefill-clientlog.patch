@@ -1,0 +1,38 @@
+From a7aefee1776d8506ed0905055f13838910c9c1ab Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Tue, 10 Jun 2025 10:21:10 +0200
+Subject: [PATCH 19/19] add option to prefill clientlog
+
+---
+ clientlog.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/clientlog.c b/clientlog.c
+index b52a5730..5cddc01c 100644
+--- a/clientlog.c
++++ b/clientlog.c
+@@ -430,6 +430,21 @@ CLG_Initialise(void)
+   ntp_ts_map.slew_offset = 0.0;
+ 
+   LCL_AddParameterChangeHandler(handle_slew, NULL);
++
++  if (1) {
++    char *prefill = getenv("TEST_PREFILL_CLIENTLOG");
++    int n = prefill ? atoi(prefill) : 0;
++    struct timespec now;
++    IPAddr ip;
++
++    LCL_ReadCookedTime(&now, NULL);
++
++    for (i = 0; i < n; i++) {
++      ip.family = random() % 2 ? IPADDR_INET4 : IPADDR_INET6;
++      UTI_GetRandomBytes(&ip.addr, sizeof (ip.addr));
++      CLG_LogServiceAccess(CLG_NTP + random() % 3, &ip, &now);
++    }
++  }
+ }
+ 
+ /* ================================================== */
+-- 
+2.49.0
+
