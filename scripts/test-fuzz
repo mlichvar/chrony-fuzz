@@ -18,12 +18,12 @@ output=$WORK_DIR/output
 mkdir -p "$input"
 echo > "$input/00001"
 
-for cc in gcc clang; do
+for cc in gcc-fast clang-lto; do
 	for bug in 1 2 3; do
 		case $bug in
-			1) scripts/build $cc-fast asan || exit 2;;
+			1) scripts/build $cc asan || exit 2;;
 			2);;
-			3) scripts/build $cc-fast msan || continue;;
+			3) scripts/build $cc msan || continue;;
 		esac
 
 		rm -rf "$output"

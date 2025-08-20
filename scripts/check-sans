@@ -3,7 +3,7 @@
 set -e
 
 for build_opts in \
-	"gcc-fast asan" "clang-fast asan" "clang-fast msan"
+	"gcc-fast asan" "clang-lto asan" "clang-lto msan"
 do
 	for extra_conf_opts in \
 		"" \
