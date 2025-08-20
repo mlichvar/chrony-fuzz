@@ -1,4 +1,4 @@
-From a7aefee1776d8506ed0905055f13838910c9c1ab Mon Sep 17 00:00:00 2001
+From 2263aba81766c3fcc41a90d07e3178ff238d03ff Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 10 Jun 2025 10:21:10 +0200
 Subject: [PATCH 19/19] add option to prefill clientlog
@@ -34,5 +34,5 @@ index b52a5730..5cddc01c 100644
  
  /* ================================================== */
 -- 
-2.49.0
+2.50.1
 

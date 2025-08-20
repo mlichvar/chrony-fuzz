@@ -1,7 +1,7 @@
-From 45622871f0e432345b4f36e1bb8ee63a6b9b9589 Mon Sep 17 00:00:00 2001
+From 95632d618dc685004c13c2ea90dbecfe21bcddcc Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:47:12 +0200
-Subject: [PATCH 15/17] add option to directly feed some functions
+Subject: [PATCH 15/19] add option to directly feed some functions
 
 ---
  client.c       | 20 ++++++++++++++++++++
@@ -12,10 +12,10 @@ Subject: [PATCH 15/17] add option to directly feed some functions
  5 files changed, 83 insertions(+), 22 deletions(-)
 
 diff --git a/client.c b/client.c
-index aa9bd689..ee80b565 100644
+index 1e4ae3a1..fd150ce2 100644
 --- a/client.c
 +++ b/client.c
-@@ -3439,6 +3439,26 @@ main(int argc, char **argv)
+@@ -3626,6 +3626,26 @@ main(int argc, char **argv)
      if (!strcmp("--help", argv[optind])) {
        print_help(progname);
        return 0;
@@ -43,10 +43,10 @@ index aa9bd689..ee80b565 100644
        print_version();
        return 0;
 diff --git a/configure b/configure
-index 5ae8149b..d9f44575 100755
+index 9636bb64..114a0873 100755
 --- a/configure
 +++ b/configure
-@@ -825,6 +825,8 @@ then
+@@ -810,6 +810,8 @@ then
    EXTRA_LIBS="$EXTRA_LIBS -lseccomp"
  fi
  
@@ -56,10 +56,10 @@ index 5ae8149b..d9f44575 100755
    EXTRA_OBJECTS="$EXTRA_OBJECTS privops.o"
    add_def PRIVOPS_HELPER
 diff --git a/main.c b/main.c
-index 7c420ced..aeeaf3bb 100644
+index e239179c..1fed674f 100644
 --- a/main.c
 +++ b/main.c
-@@ -445,6 +445,9 @@ parse_int_arg(const char *arg)
+@@ -483,6 +483,9 @@ parse_int_arg(const char *arg)
  
  /* ================================================== */
  
@@ -69,7 +69,7 @@ index 7c420ced..aeeaf3bb 100644
  int main
  (int argc, char **argv)
  {
-@@ -475,6 +478,25 @@ int main
+@@ -513,6 +516,25 @@ int main
      } else if (!strcmp("--version", argv[optind])) {
        print_version();
        return 0;
@@ -96,10 +96,10 @@ index 7c420ced..aeeaf3bb 100644
    }
  
 diff --git a/ntp_io_linux.c b/ntp_io_linux.c
-index 6988a286..cb12e6e1 100644
+index 23f427a5..f9f6d652 100644
 --- a/ntp_io_linux.c
 +++ b/ntp_io_linux.c
-@@ -709,6 +709,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
+@@ -722,6 +722,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
  
  /* ================================================== */
  
@@ -119,10 +119,10 @@ index 6988a286..cb12e6e1 100644
  NIO_Linux_ProcessMessage(SCK_Message *message, NTP_Local_Address *local_addr,
                           NTP_Local_Timestamp *local_ts, int event)
 diff --git a/privops.c b/privops.c
-index 3fb5cbd5..0f213606 100644
+index 3bc76d14..2e8d704f 100644
 --- a/privops.c
 +++ b/privops.c
-@@ -156,6 +156,7 @@ res_fatal(PrvResponse *res, const char *fmt, ...)
+@@ -157,6 +157,7 @@ res_fatal(PrvResponse *res, const char *fmt, ...)
  
  /* HELPER - send response to the fd */
  
@@ -130,7 +130,7 @@ index 3fb5cbd5..0f213606 100644
  static int
  send_response(int fd, const PrvResponse *res)
  {
-@@ -192,6 +193,7 @@ receive_from_daemon(int fd, PrvRequest *req)
+@@ -193,6 +194,7 @@ receive_from_daemon(int fd, PrvRequest *req)
  
    return 1;
  }
@@ -138,7 +138,7 @@ index 3fb5cbd5..0f213606 100644
  
  /* ======================================================================= */
  
-@@ -201,9 +203,8 @@ receive_from_daemon(int fd, PrvRequest *req)
+@@ -202,9 +204,8 @@ receive_from_daemon(int fd, PrvRequest *req)
  static void
  do_adjust_time(const ReqAdjustTime *req, PrvResponse *res)
  {
@@ -150,7 +150,7 @@ index 3fb5cbd5..0f213606 100644
  }
  #endif
  
-@@ -216,9 +217,7 @@ static void
+@@ -217,9 +218,7 @@ static void
  do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
  {
    res->data.adjust_timex.tmx = req->tmx;
@@ -161,7 +161,7 @@ index 3fb5cbd5..0f213606 100644
  }
  #endif
  
-@@ -230,9 +229,8 @@ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
+@@ -231,9 +230,8 @@ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
  static void
  do_set_time(const ReqSetTime *req, PrvResponse *res)
  {
@@ -173,7 +173,7 @@ index 3fb5cbd5..0f213606 100644
  }
  #endif
  
-@@ -256,17 +254,12 @@ do_bind_socket(ReqBindSocket *req, PrvResponse *res)
+@@ -257,17 +255,12 @@ do_bind_socket(ReqBindSocket *req, PrvResponse *res)
    SCK_SockaddrToIPSockAddr(sa, sa_len, &ip_saddr);
    if (ip_saddr.port != 0 && ip_saddr.port != CNF_GetNTPPort() &&
        ip_saddr.port != CNF_GetAcquisitionPort() && ip_saddr.port != CNF_GetPtpPort()) {
@@ -193,7 +193,7 @@ index 3fb5cbd5..0f213606 100644
  }
  #endif
  
-@@ -294,7 +287,6 @@ do_name_to_ipaddress(ReqName2IPAddress *req, PrvResponse *res)
+@@ -295,7 +288,6 @@ do_name_to_ipaddress(ReqName2IPAddress *req, PrvResponse *res)
  static void
  do_reload_dns(PrvResponse *res)
  {
@@ -201,7 +201,7 @@ index 3fb5cbd5..0f213606 100644
    res->rc = 0;
  }
  #endif
-@@ -304,19 +296,20 @@ do_reload_dns(PrvResponse *res)
+@@ -305,19 +297,20 @@ do_reload_dns(PrvResponse *res)
  /* HELPER - main loop - action requests from the daemon */
  
  static void
@@ -225,7 +225,7 @@ index 3fb5cbd5..0f213606 100644
      switch (req.op) {
  #ifdef PRIVOPS_ADJUSTTIME
        case OP_ADJUSTTIME:
-@@ -357,15 +350,23 @@ helper_main(int fd)
+@@ -358,15 +351,23 @@ helper_main(int fd)
          break;
      }
  
@@ -251,7 +251,7 @@ index 3fb5cbd5..0f213606 100644
  /* DAEMON - receive helper response */
  
  static void
-@@ -637,6 +638,9 @@ PRV_Initialise(void)
+@@ -638,6 +639,9 @@ PRV_Initialise(void)
  void
  PRV_StartHelper(void)
  {
@@ -261,7 +261,7 @@ index 3fb5cbd5..0f213606 100644
    pid_t pid;
    int fd, sock_fd1, sock_fd2;
  
-@@ -678,6 +682,7 @@ PRV_StartHelper(void)
+@@ -679,6 +683,7 @@ PRV_StartHelper(void)
      /* stop the helper even when not exiting cleanly from the main function */
      atexit(stop_helper);
    }
@@ -270,5 +270,5 @@ index 3fb5cbd5..0f213606 100644
  
  /* ======================================================================= */
 -- 
-2.41.0
+2.50.1
 

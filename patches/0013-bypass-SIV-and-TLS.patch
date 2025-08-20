@@ -1,22 +1,22 @@
-From dfb3aab2ece190455c591645947e2d84cd10ff1a Mon Sep 17 00:00:00 2001
+From f3a85c1e209f363770b953356eb27f7d396b83c2 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:06 +0200
-Subject: [PATCH 13/18] bypass SIV and TLS
+Subject: [PATCH 13/19] bypass SIV and TLS
 
 ---
  configure        |  2 +-
  nts_ke_server.c  |  6 ++++--
- nts_ke_session.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++-
  nts_ntp_client.c |  1 +
  nts_ntp_server.c |  1 +
  siv_nettle.c     | 11 +++++++++++
- 6 files changed, 64 insertions(+), 4 deletions(-)
+ tls_gnutls.c     | 37 +++++++++++++++++++++++++++++++++++++
+ 6 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
-index 03087c62..c9039234 100755
+index 1c0ad670..9636bb64 100755
 --- a/configure
 +++ b/configure
-@@ -988,7 +988,7 @@ if [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
+@@ -998,7 +998,7 @@ if [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
          add_def HAVE_NETTLE_SIV_GCM
        fi
      else
@@ -63,173 +63,6 @@ index 33aef082..0944fd8c 100644
      DEBUG_LOG("Unknown key %"PRIX32, key_id);
      return 0;
    }
-diff --git a/nts_ke_session.c b/nts_ke_session.c
-index c5f49d3d..29c3625c 100644
---- a/nts_ke_session.c
-+++ b/nts_ke_session.c
-@@ -217,6 +217,10 @@ create_tls_session(int server_mode, int sock_fd, const char *server_name,
-   unsigned int flags;
-   int r;
- 
-+  int *x = malloc(sizeof *x);
-+  *x = sock_fd;
-+  return (gnutls_session_t)x;
-+
-   r = gnutls_init(&session, GNUTLS_NONBLOCK | GNUTLS_NO_TICKETS |
-                   (server_mode ? GNUTLS_SERVER : GNUTLS_CLIENT));
-   if (r < 0) {
-@@ -286,7 +290,11 @@ stop_session(NKSN_Instance inst)
-   Free(inst->label);
-   inst->label = NULL;
- 
-+#if 0
-   gnutls_deinit(inst->tls_session);
-+#else
-+  Free(inst->tls_session);
-+#endif
-   inst->tls_session = NULL;
- 
-   SCH_RemoveTimeout(inst->timeout_id);
-@@ -313,6 +321,8 @@ check_alpn(NKSN_Instance inst)
- {
-   gnutls_datum_t alpn;
- 
-+  return 1;
-+
-   if (gnutls_alpn_get_selected_protocol(inst->tls_session, &alpn) < 0 ||
-       alpn.size != sizeof (NKE_ALPN_NAME) - 1 ||
-       memcmp(alpn.data, NKE_ALPN_NAME, sizeof (NKE_ALPN_NAME) - 1) != 0)
-@@ -390,7 +400,11 @@ handle_event(NKSN_Instance inst, int event)
-       return 0;
- 
-     case KE_HANDSHAKE:
-+#if 0
-       r = gnutls_handshake(inst->tls_session);
-+#else
-+      r = 0;
-+#endif
- 
-       if (r < 0) {
-         if (gnutls_error_is_fatal(r)) {
-@@ -427,7 +441,7 @@ handle_event(NKSN_Instance inst, int event)
- 
-       inst->retry_factor = NKE_RETRY_FACTOR2_TLS;
- 
--      if (DEBUG) {
-+      if (0 && DEBUG) {
-         char *description = gnutls_session_get_desc(inst->tls_session);
-         DEBUG_LOG("Handshake with %s completed %s",
-                   inst->label, description ? description : "");
-@@ -448,8 +462,13 @@ handle_event(NKSN_Instance inst, int event)
-       assert(inst->new_message && message->complete);
-       assert(message->length <= sizeof (message->data) && message->length > message->sent);
- 
-+#if 0
-       r = gnutls_record_send(inst->tls_session, &message->data[message->sent],
-                              message->length - message->sent);
-+#else
-+      r = send(*(int *)(inst->tls_session), &message->data[message->sent],
-+                             message->length - message->sent, 0);
-+#endif
- 
-       if (r < 0) {
-         if (gnutls_error_is_fatal(r)) {
-@@ -480,8 +499,13 @@ handle_event(NKSN_Instance inst, int event)
-           return 0;
-         }
- 
-+#if 0
-         r = gnutls_record_recv(inst->tls_session, &message->data[message->length],
-                                sizeof (message->data) - message->length);
-+#else
-+        r = recv(*(int *)(inst->tls_session), &message->data[message->length],
-+                               sizeof (message->data) - message->length, 0);
-+#endif
- 
-         if (r < 0) {
-           /* Handle a renegotiation request on both client and server as
-@@ -499,7 +523,11 @@ handle_event(NKSN_Instance inst, int event)
- 
-         message->length += r;
- 
-+#if 0
-       } while (gnutls_record_check_pending(inst->tls_session) > 0);
-+#else
-+      } while (0);
-+#endif
- 
-       if (!check_message_format(message, r == 0)) {
-         LOG(inst->server ? LOGS_DEBUG : LOGS_ERR,
-@@ -519,7 +547,11 @@ handle_event(NKSN_Instance inst, int event)
-       return 1;
- 
-     case KE_SHUTDOWN:
-+#if 0
-       r = gnutls_bye(inst->tls_session, GNUTLS_SHUT_RDWR);
-+#else
-+      r = 0;
-+#endif
- 
-       if (r < 0) {
-         if (gnutls_error_is_fatal(r)) {
-@@ -598,6 +630,7 @@ static int
- init_gnutls(void)
- {
-   int r;
-+  assert(0);
- 
-   if (gnutls_initialised)
-     return 1;
-@@ -634,6 +667,7 @@ init_gnutls(void)
- static void
- deinit_gnutls(void)
- {
-+  assert(0);
-   if (!gnutls_initialised || credentials_counter > 0)
-     return;
- 
-@@ -655,6 +689,8 @@ create_credentials(const char **certs, const char **keys, int n_certs_keys,
-   gnutls_certificate_credentials_t credentials = NULL;
-   int i, r;
- 
-+  return malloc(1);
-+
-   if (!init_gnutls())
-     return NULL;
- 
-@@ -737,9 +773,13 @@ NKSN_CreateClientCertCredentials(const char **certs, uint32_t *ids,
- void
- NKSN_DestroyCertCredentials(NKSN_Credentials credentials)
- {
-+#if 0
-   gnutls_certificate_free_credentials((gnutls_certificate_credentials_t)credentials);
-   credentials_counter--;
-   deinit_gnutls();
-+#else
-+  Free(credentials);
-+#endif
- }
- 
- /* ================================================== */
-@@ -898,6 +938,7 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm algorithm, SIV_Algorithm exporter
-   context.next_protocol = htons(next_protocol);
-   context.algorithm = htons(exporter_algorithm);
- 
-+#if 0
-   context.is_s2c = 0;
-   if (gnutls_prf_rfc5705(inst->tls_session,
-                          sizeof (NKE_EXPORTER_LABEL) - 1, NKE_EXPORTER_LABEL,
-@@ -915,6 +956,10 @@ NKSN_GetKeys(NKSN_Instance inst, SIV_Algorithm algorithm, SIV_Algorithm exporter
-     DEBUG_LOG("Could not export key");
-     return 0;
-   }
-+#else
-+  memset(c2s->key, 0, length);
-+  memset(s2c->key, 0, length);
-+#endif
- 
-   c2s->length = length;
-   s2c->length = length;
 diff --git a/nts_ntp_client.c b/nts_ntp_client.c
 index b11a6a07..cf3fc74a 100644
 --- a/nts_ntp_client.c
@@ -297,6 +130,139 @@ index 157d700e..5ef76c4d 100644
  
    return 1;
  }
+diff --git a/tls_gnutls.c b/tls_gnutls.c
+index eda1c2af..3175cf80 100644
+--- a/tls_gnutls.c
++++ b/tls_gnutls.c
+@@ -55,6 +55,7 @@ static gnutls_priority_t priority_cache;
+ int
+ TLS_Initialise(time_t (*get_time)(time_t *t))
+ {
++  return 1;
+   int r = gnutls_global_init();
+ 
+   if (r < 0)
+@@ -83,6 +84,7 @@ TLS_Initialise(time_t (*get_time)(time_t *t))
+ void
+ TLS_Finalise(void)
+ {
++  return;
+   gnutls_priority_deinit(priority_cache);
+   gnutls_global_deinit();
+ }
+@@ -97,6 +99,8 @@ TLS_CreateCredentials(const char **certs, const char **keys, int n_certs_keys,
+   gnutls_certificate_credentials_t credentials = NULL;
+   int i, r;
+ 
++  return malloc(1);
++
+   r = gnutls_certificate_allocate_credentials(&credentials);
+   if (r < 0)
+     goto error;
+@@ -156,6 +160,9 @@ error:
+ void
+ TLS_DestroyCredentials(TLS_Credentials credentials)
+ {
++  Free(credentials);
++  return;
++
+   gnutls_certificate_free_credentials((gnutls_certificate_credentials_t)credentials);
+ }
+ 
+@@ -175,6 +182,9 @@ TLS_CreateInstance(int server_mode, int sock_fd, const char *server_name, const
+   inst->server = server_mode;
+   inst->label = Strdup(label);
+   inst->alpn_name = Strdup(alpn_name);
++  inst->session = malloc(sizeof (int));
++  *(int *)inst->session = sock_fd;
++  return inst;
+ 
+   r = gnutls_init(&inst->session, GNUTLS_NONBLOCK | GNUTLS_NO_TICKETS |
+                                   (server_mode ? GNUTLS_SERVER : GNUTLS_CLIENT));
+@@ -235,7 +245,11 @@ void
+ TLS_DestroyInstance(TLS_Instance inst)
+ {
+   if (inst->session)
++#if 0
+     gnutls_deinit(inst->session);
++#else
++    Free(inst->session);
++#endif
+ 
+   Free(inst->label);
+   Free(inst->alpn_name);
+@@ -251,6 +265,8 @@ check_alpn(TLS_Instance inst)
+   gnutls_datum_t alpn;
+   int length = strlen(inst->alpn_name);
+ 
++  return 1;
++
+   if (gnutls_alpn_get_selected_protocol(inst->session, &alpn) < 0 ||
+       alpn.size != length || memcmp(alpn.data, inst->alpn_name, length) != 0)
+     return 0;
+@@ -263,6 +279,8 @@ check_alpn(TLS_Instance inst)
+ TLS_Status
+ TLS_DoHandshake(TLS_Instance inst)
+ {
++  return TLS_SUCCESS;
++
+   int r = gnutls_handshake(inst->session);
+ 
+   if (r < 0) {
+@@ -318,6 +336,12 @@ TLS_Send(TLS_Instance inst, const void *data, int length, int *sent)
+   if (length < 0)
+     return TLS_FAILED;
+ 
++  r = send(*(int *)(inst->session), data, length, 0);
++  if (r < 0)
++    return TLS_FAILED;
++  *sent = r;
++  return TLS_SUCCESS;
++
+   r = gnutls_record_send(inst->session, data, length);
+ 
+   if (r < 0) {
+@@ -345,6 +369,12 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
+   if (length < 0)
+     return TLS_FAILED;
+ 
++  r = recv(*(int *)(inst->session), data, length, 0);
++  if (r < 0)
++    return TLS_FAILED;
++  *received = r;
++  return TLS_SUCCESS;
++
+   r = gnutls_record_recv(inst->session, data, length);
+ 
+   if (r < 0) {
+@@ -369,6 +399,8 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
+ int
+ TLS_CheckPending(TLS_Instance inst)
+ {
++  return 0;
++
+   return gnutls_record_check_pending(inst->session) > 0;
+ }
+ 
+@@ -377,6 +409,8 @@ TLS_CheckPending(TLS_Instance inst)
+ TLS_Status
+ TLS_Shutdown(TLS_Instance inst)
+ {
++  return TLS_SUCCESS;
++
+   int r = gnutls_bye(inst->session, GNUTLS_SHUT_RDWR);
+ 
+   if (r < 0) {
+@@ -402,6 +436,9 @@ TLS_ExportKey(TLS_Instance inst, int label_length, const char *label, int contex
+   if (label_length < 0 || context_length < 0 || key_length < 0)
+     return 0;
+ 
++  memset(key, 0, key_length);
++  return 1;
++
+   r = gnutls_prf_rfc5705(inst->session, label_length, label, context_length, (char *)context,
+                          key_length, (char *)key);
+ 
 -- 
-2.49.0
+2.50.1
 

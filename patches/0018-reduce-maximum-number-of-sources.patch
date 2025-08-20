@@ -1,7 +1,7 @@
-From 8cb6132bf5530c76085c7360c84468d028119848 Mon Sep 17 00:00:00 2001
+From 5e717c1b79dff12858d5d7760ac94f1c78d12e6b Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Mon, 7 Oct 2024 11:05:13 +0200
-Subject: [PATCH 18/18] reduce maximum number of sources
+Subject: [PATCH 18/19] reduce maximum number of sources
 
 ---
  ntp_sources.c | 2 +-
@@ -21,5 +21,5 @@ index 7bf08894..64753e89 100644
  /* Record type private to this file, used to store information about
     particular sources */
 -- 
-2.49.0
+2.50.1
 

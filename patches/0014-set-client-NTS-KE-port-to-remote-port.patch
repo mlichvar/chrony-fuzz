@@ -1,17 +1,17 @@
-From 00372099d27b8cec8d4fd99857d06e3bc5a9e129 Mon Sep 17 00:00:00 2001
+From be8e1f08b7a390da215e49f6669e548aa5c3c205 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:33 +0200
-Subject: [PATCH 14/17] set client NTS-KE port to remote port
+Subject: [PATCH 14/19] set client NTS-KE port to remote port
 
 ---
  nts_ke_client.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/nts_ke_client.c b/nts_ke_client.c
-index 3891f712..c7ecb61a 100644
+index e68d4dcf..6d310204 100644
 --- a/nts_ke_client.c
 +++ b/nts_ke_client.c
-@@ -387,7 +387,7 @@ NKC_Start(NKC_Instance inst)
+@@ -436,7 +436,7 @@ NKC_Start(NKC_Instance inst)
  
    /* Follow the bindacqaddress and bindacqdevice settings */
    CNF_GetBindAcquisitionAddress(inst->address.ip_addr.family, &local_addr.ip_addr);
@@ -21,5 +21,5 @@ index 3891f712..c7ecb61a 100644
  
    /* Make a label containing both the address and name of the server */
 -- 
-2.41.0
+2.50.1
 
