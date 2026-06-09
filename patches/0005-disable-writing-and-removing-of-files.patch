@@ -1,4 +1,4 @@
-From e92a9268df7e3bb3567ede2fe93d9ce0e92482d3 Mon Sep 17 00:00:00 2001
+From 3bc8e6b7b72d8e85c7610d85fe0331b0fc6a4a0f Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:10:01 +0200
 Subject: [PATCH 05/19] disable writing and removing of files
@@ -8,10 +8,10 @@ Subject: [PATCH 05/19] disable writing and removing of files
  1 file changed, 7 insertions(+)
 
 diff --git a/util.c b/util.c
-index 21fbc1bd..2d0956c9 100644
+index b3117d35..f476d0cf 100644
 --- a/util.c
 +++ b/util.c
-@@ -1388,11 +1388,15 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1390,11 +1390,15 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
        break;
      case 'w':
      case 'W':
@@ -27,7 +27,7 @@ index 21fbc1bd..2d0956c9 100644
        flags = O_WRONLY | O_CREAT | O_APPEND | O_NOFOLLOW;
        file_mode = "a";
        break;
-@@ -1483,6 +1487,9 @@ UTI_RemoveFile(const char *basedir, const char *name, const char *suffix)
+@@ -1485,6 +1489,9 @@ UTI_RemoveFile(const char *basedir, const char *name, const char *suffix)
      return 0;
    }
  
@@ -38,5 +38,5 @@ index 21fbc1bd..2d0956c9 100644
      LOG(LOGS_ERR, "Could not remove %s : %s", path, strerror(errno));
      return 0;
 -- 
-2.50.1
+2.54.0
 

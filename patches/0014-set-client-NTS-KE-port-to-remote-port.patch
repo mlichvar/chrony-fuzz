@@ -1,4 +1,4 @@
-From be8e1f08b7a390da215e49f6669e548aa5c3c205 Mon Sep 17 00:00:00 2001
+From 3dbb704f673619e43a96199f13856180e9e2b089 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:33 +0200
 Subject: [PATCH 14/19] set client NTS-KE port to remote port
@@ -21,5 +21,5 @@ index e68d4dcf..6d310204 100644
  
    /* Make a label containing both the address and name of the server */
 -- 
-2.50.1
+2.54.0
 

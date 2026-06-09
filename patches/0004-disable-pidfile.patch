@@ -1,4 +1,4 @@
-From a67adc25e0e9f4c5eefbb5ae3a94baf3591f0cec Mon Sep 17 00:00:00 2001
+From 724e55719bfd1f68d4fe00b4e03583d5fda7a4e4 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 17:24:22 +0200
 Subject: [PATCH 04/19] disable pidfile
@@ -8,10 +8,10 @@ Subject: [PATCH 04/19] disable pidfile
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/main.c b/main.c
-index 489f3aee..86a3228a 100644
+index 0f0ce2f6..fb6dc5d9 100644
 --- a/main.c
 +++ b/main.c
-@@ -173,7 +173,8 @@ MAI_CleanupAndExit(void)
+@@ -183,7 +183,8 @@ MAI_CleanupAndExit(void)
    LCL_Finalise();
    PRV_Finalise();
  
@@ -21,7 +21,7 @@ index 489f3aee..86a3228a 100644
    
    CNF_Finalise();
    HSH_Finalise();
-@@ -640,7 +641,8 @@ int main
+@@ -654,7 +655,8 @@ int main
      return 0;
  
    /* Check whether another chronyd may already be running */
@@ -31,7 +31,7 @@ index 489f3aee..86a3228a 100644
  
    if (!user)
      user = CNF_GetUser();
-@@ -653,7 +655,8 @@ int main
+@@ -667,7 +669,8 @@ int main
    CNF_CreateDirs(pw->pw_uid, pw->pw_gid);
  
    /* Write our pidfile to prevent other instances from running */
@@ -39,8 +39,8 @@ index 489f3aee..86a3228a 100644
 +  if (0)
 +    write_pidfile();
  
-   PRV_Initialise();
+   PRV_Initialise(scfilter_level);
    LCL_Initialise();
 -- 
-2.50.1
+2.54.0
 

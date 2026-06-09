@@ -1,4 +1,4 @@
-From 2263aba81766c3fcc41a90d07e3178ff238d03ff Mon Sep 17 00:00:00 2001
+From be637b578112e691a236ee772723a0f89f080ded Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 10 Jun 2025 10:21:10 +0200
 Subject: [PATCH 19/19] add option to prefill clientlog
@@ -8,10 +8,10 @@ Subject: [PATCH 19/19] add option to prefill clientlog
  1 file changed, 15 insertions(+)
 
 diff --git a/clientlog.c b/clientlog.c
-index b52a5730..5cddc01c 100644
+index fbdb14b5..29f37b78 100644
 --- a/clientlog.c
 +++ b/clientlog.c
-@@ -430,6 +430,21 @@ CLG_Initialise(void)
+@@ -450,6 +450,21 @@ CLG_Initialise(void)
    ntp_ts_map.slew_offset = 0.0;
  
    LCL_AddParameterChangeHandler(handle_slew, NULL);
@@ -34,5 +34,5 @@ index b52a5730..5cddc01c 100644
  
  /* ================================================== */
 -- 
-2.50.1
+2.54.0
 

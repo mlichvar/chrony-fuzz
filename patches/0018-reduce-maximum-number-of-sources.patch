@@ -1,4 +1,4 @@
-From 5e717c1b79dff12858d5d7760ac94f1c78d12e6b Mon Sep 17 00:00:00 2001
+From def7cbf1a739111b06349bcf7cdd0edcb3a86885 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Mon, 7 Oct 2024 11:05:13 +0200
 Subject: [PATCH 18/19] reduce maximum number of sources
@@ -8,7 +8,7 @@ Subject: [PATCH 18/19] reduce maximum number of sources
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/ntp_sources.c b/ntp_sources.c
-index 7bf08894..64753e89 100644
+index aa53c425..cd0a5e8d 100644
 --- a/ntp_sources.c
 +++ b/ntp_sources.c
 @@ -47,7 +47,7 @@
@@ -21,5 +21,5 @@ index 7bf08894..64753e89 100644
  /* Record type private to this file, used to store information about
     particular sources */
 -- 
-2.50.1
+2.54.0
 

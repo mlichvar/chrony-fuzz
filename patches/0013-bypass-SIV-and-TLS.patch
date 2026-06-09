@@ -1,4 +1,4 @@
-From f3a85c1e209f363770b953356eb27f7d396b83c2 Mon Sep 17 00:00:00 2001
+From 416685da621abb83806d74ca424abbd46594b31f Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:52:06 +0200
 Subject: [PATCH 13/19] bypass SIV and TLS
@@ -13,10 +13,10 @@ Subject: [PATCH 13/19] bypass SIV and TLS
  6 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
-index 1c0ad670..9636bb64 100755
+index 61d8e4b8..a8e8e403 100755
 --- a/configure
 +++ b/configure
-@@ -998,7 +998,7 @@ if [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
+@@ -1018,7 +1018,7 @@ if [ $feat_nts = "1" ] && [ $try_gnutls = "1" ]; then
          add_def HAVE_NETTLE_SIV_GCM
        fi
      else
@@ -131,10 +131,10 @@ index 157d700e..5ef76c4d 100644
    return 1;
  }
 diff --git a/tls_gnutls.c b/tls_gnutls.c
-index eda1c2af..3175cf80 100644
+index dbeb9054..3d641284 100644
 --- a/tls_gnutls.c
 +++ b/tls_gnutls.c
-@@ -55,6 +55,7 @@ static gnutls_priority_t priority_cache;
+@@ -56,6 +56,7 @@ static gnutls_priority_t priority_cache;
  int
  TLS_Initialise(time_t (*get_time)(time_t *t))
  {
@@ -142,7 +142,7 @@ index eda1c2af..3175cf80 100644
    int r = gnutls_global_init();
  
    if (r < 0)
-@@ -83,6 +84,7 @@ TLS_Initialise(time_t (*get_time)(time_t *t))
+@@ -84,6 +85,7 @@ TLS_Initialise(time_t (*get_time)(time_t *t))
  void
  TLS_Finalise(void)
  {
@@ -150,7 +150,7 @@ index eda1c2af..3175cf80 100644
    gnutls_priority_deinit(priority_cache);
    gnutls_global_deinit();
  }
-@@ -97,6 +99,8 @@ TLS_CreateCredentials(const char **certs, const char **keys, int n_certs_keys,
+@@ -98,6 +100,8 @@ TLS_CreateCredentials(const char **certs, const char **keys, int n_certs_keys,
    gnutls_certificate_credentials_t credentials = NULL;
    int i, r;
  
@@ -159,7 +159,7 @@ index eda1c2af..3175cf80 100644
    r = gnutls_certificate_allocate_credentials(&credentials);
    if (r < 0)
      goto error;
-@@ -156,6 +160,9 @@ error:
+@@ -157,6 +161,9 @@ error:
  void
  TLS_DestroyCredentials(TLS_Credentials credentials)
  {
@@ -169,8 +169,8 @@ index eda1c2af..3175cf80 100644
    gnutls_certificate_free_credentials((gnutls_certificate_credentials_t)credentials);
  }
  
-@@ -175,6 +182,9 @@ TLS_CreateInstance(int server_mode, int sock_fd, const char *server_name, const
-   inst->server = server_mode;
+@@ -177,6 +184,9 @@ TLS_CreateInstance(int server_mode, int sock_fd, const char *server_name, const
+   inst->server_name = NULL;
    inst->label = Strdup(label);
    inst->alpn_name = Strdup(alpn_name);
 +  inst->session = malloc(sizeof (int));
@@ -179,7 +179,7 @@ index eda1c2af..3175cf80 100644
  
    r = gnutls_init(&inst->session, GNUTLS_NONBLOCK | GNUTLS_NO_TICKETS |
                                    (server_mode ? GNUTLS_SERVER : GNUTLS_CLIENT));
-@@ -235,7 +245,11 @@ void
+@@ -245,7 +255,11 @@ void
  TLS_DestroyInstance(TLS_Instance inst)
  {
    if (inst->session)
@@ -189,9 +189,9 @@ index eda1c2af..3175cf80 100644
 +    Free(inst->session);
 +#endif
  
-   Free(inst->label);
-   Free(inst->alpn_name);
-@@ -251,6 +265,8 @@ check_alpn(TLS_Instance inst)
+   if (inst->server_name)
+     Free(inst->server_name);
+@@ -263,6 +277,8 @@ check_alpn(TLS_Instance inst)
    gnutls_datum_t alpn;
    int length = strlen(inst->alpn_name);
  
@@ -200,7 +200,7 @@ index eda1c2af..3175cf80 100644
    if (gnutls_alpn_get_selected_protocol(inst->session, &alpn) < 0 ||
        alpn.size != length || memcmp(alpn.data, inst->alpn_name, length) != 0)
      return 0;
-@@ -263,6 +279,8 @@ check_alpn(TLS_Instance inst)
+@@ -275,6 +291,8 @@ check_alpn(TLS_Instance inst)
  TLS_Status
  TLS_DoHandshake(TLS_Instance inst)
  {
@@ -209,7 +209,7 @@ index eda1c2af..3175cf80 100644
    int r = gnutls_handshake(inst->session);
  
    if (r < 0) {
-@@ -318,6 +336,12 @@ TLS_Send(TLS_Instance inst, const void *data, int length, int *sent)
+@@ -330,6 +348,12 @@ TLS_Send(TLS_Instance inst, const void *data, int length, int *sent)
    if (length < 0)
      return TLS_FAILED;
  
@@ -222,7 +222,7 @@ index eda1c2af..3175cf80 100644
    r = gnutls_record_send(inst->session, data, length);
  
    if (r < 0) {
-@@ -345,6 +369,12 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
+@@ -357,6 +381,12 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
    if (length < 0)
      return TLS_FAILED;
  
@@ -235,7 +235,7 @@ index eda1c2af..3175cf80 100644
    r = gnutls_record_recv(inst->session, data, length);
  
    if (r < 0) {
-@@ -369,6 +399,8 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
+@@ -381,6 +411,8 @@ TLS_Receive(TLS_Instance inst, void *data, int length, int *received)
  int
  TLS_CheckPending(TLS_Instance inst)
  {
@@ -244,7 +244,7 @@ index eda1c2af..3175cf80 100644
    return gnutls_record_check_pending(inst->session) > 0;
  }
  
-@@ -377,6 +409,8 @@ TLS_CheckPending(TLS_Instance inst)
+@@ -389,6 +421,8 @@ TLS_CheckPending(TLS_Instance inst)
  TLS_Status
  TLS_Shutdown(TLS_Instance inst)
  {
@@ -253,7 +253,7 @@ index eda1c2af..3175cf80 100644
    int r = gnutls_bye(inst->session, GNUTLS_SHUT_RDWR);
  
    if (r < 0) {
-@@ -402,6 +436,9 @@ TLS_ExportKey(TLS_Instance inst, int label_length, const char *label, int contex
+@@ -414,6 +448,9 @@ TLS_ExportKey(TLS_Instance inst, int label_length, const char *label, int contex
    if (label_length < 0 || context_length < 0 || key_length < 0)
      return 0;
  
@@ -264,5 +264,5 @@ index eda1c2af..3175cf80 100644
                           key_length, (char *)key);
  
 -- 
-2.50.1
+2.54.0
 

@@ -1,4 +1,4 @@
-From d90f10036368a6d7d52f841665fa8e78ea5467fa Mon Sep 17 00:00:00 2001
+From 28c8e58ca91dd278a879e3717153919f6ed60e91 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 12 Apr 2022 16:16:39 +0200
 Subject: [PATCH 06/19] allow files to be switched to stdin
@@ -8,10 +8,10 @@ Subject: [PATCH 06/19] allow files to be switched to stdin
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/util.c b/util.c
-index 2d0956c9..7e9cde3f 100644
+index f476d0cf..f0728074 100644
 --- a/util.c
 +++ b/util.c
-@@ -1368,7 +1368,7 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1370,7 +1370,7 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
  {
    uint64_t attempts = 0, warn_attempts = 100;
    const char *file_mode;
@@ -20,7 +20,7 @@ index 2d0956c9..7e9cde3f 100644
    LOG_Severity severity;
    int fd, flags;
    FILE *file;
-@@ -1378,6 +1378,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1380,6 +1380,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
    if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
      return NULL;
  
@@ -34,5 +34,5 @@ index 2d0956c9..7e9cde3f 100644
      case 'r':
      case 'R':
 -- 
-2.50.1
+2.54.0
 

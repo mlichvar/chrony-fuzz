@@ -1,4 +1,4 @@
-From 95632d618dc685004c13c2ea90dbecfe21bcddcc Mon Sep 17 00:00:00 2001
+From 9525adb2f035b38cd2878eee19db0fb712d6213d Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 14 Apr 2022 16:47:12 +0200
 Subject: [PATCH 15/19] add option to directly feed some functions
@@ -7,15 +7,15 @@ Subject: [PATCH 15/19] add option to directly feed some functions
  client.c       | 20 ++++++++++++++++++++
  configure      |  2 ++
  main.c         | 22 ++++++++++++++++++++++
- ntp_io_linux.c | 12 ++++++++++++
+ ntp_io_linux.c | 15 +++++++++++++++
  privops.c      | 49 +++++++++++++++++++++++++++----------------------
- 5 files changed, 83 insertions(+), 22 deletions(-)
+ 5 files changed, 86 insertions(+), 22 deletions(-)
 
 diff --git a/client.c b/client.c
-index 1e4ae3a1..fd150ce2 100644
+index 042473b8..402b866e 100644
 --- a/client.c
 +++ b/client.c
-@@ -3626,6 +3626,26 @@ main(int argc, char **argv)
+@@ -3651,6 +3651,26 @@ main(int argc, char **argv)
      if (!strcmp("--help", argv[optind])) {
        print_help(progname);
        return 0;
@@ -43,11 +43,11 @@ index 1e4ae3a1..fd150ce2 100644
        print_version();
        return 0;
 diff --git a/configure b/configure
-index 9636bb64..114a0873 100755
+index a8e8e403..d00f5d8a 100755
 --- a/configure
 +++ b/configure
-@@ -810,6 +810,8 @@ then
-   EXTRA_LIBS="$EXTRA_LIBS -lseccomp"
+@@ -831,6 +831,8 @@ then
+   add_def FEAT_SCFILTER
  fi
  
 +priv_ops="ADJUSTTIME ADJUSTTIMEX SETTIME BINDSOCKET NAME2IPADDRESS RELOADDNS"
@@ -56,10 +56,10 @@ index 9636bb64..114a0873 100755
    EXTRA_OBJECTS="$EXTRA_OBJECTS privops.o"
    add_def PRIVOPS_HELPER
 diff --git a/main.c b/main.c
-index e239179c..1fed674f 100644
+index 69863343..6ed1877d 100644
 --- a/main.c
 +++ b/main.c
-@@ -483,6 +483,9 @@ parse_int_arg(const char *arg)
+@@ -494,6 +494,9 @@ parse_int_arg(const char *arg)
  
  /* ================================================== */
  
@@ -69,7 +69,7 @@ index e239179c..1fed674f 100644
  int main
  (int argc, char **argv)
  {
-@@ -513,6 +516,25 @@ int main
+@@ -524,6 +527,25 @@ int main
      } else if (!strcmp("--version", argv[optind])) {
        print_version();
        return 0;
@@ -96,10 +96,10 @@ index e239179c..1fed674f 100644
    }
  
 diff --git a/ntp_io_linux.c b/ntp_io_linux.c
-index 23f427a5..f9f6d652 100644
+index e917a785..b9e3255d 100644
 --- a/ntp_io_linux.c
 +++ b/ntp_io_linux.c
-@@ -722,6 +722,18 @@ extract_udp_data(unsigned char *msg, NTP_Remote_Address *remote_addr, int len)
+@@ -838,6 +838,21 @@ extract_udp_data(SCK_Message *message)
  
  /* ================================================== */
  
@@ -108,9 +108,12 @@ index 23f427a5..f9f6d652 100644
 +int NIO_TestUdpExtractor(FILE *f)
 +{
 +  unsigned char buf[4096];
-+  NTP_Remote_Address addr;
++  SCK_Message message;
 +
-+  return extract_udp_data(buf, &addr, fread(buf, 1, sizeof (buf), f));
++  message.data = buf;
++  message.length = fread(buf, 1, sizeof (buf), f);
++
++  return extract_udp_data(&message);
 +}
 +
 +/* ================================================== */
@@ -119,10 +122,10 @@ index 23f427a5..f9f6d652 100644
  NIO_Linux_ProcessMessage(SCK_Message *message, NTP_Local_Address *local_addr,
                           NTP_Local_Timestamp *local_ts, int event)
 diff --git a/privops.c b/privops.c
-index 3bc76d14..2e8d704f 100644
+index a42e9833..5376c35f 100644
 --- a/privops.c
 +++ b/privops.c
-@@ -157,6 +157,7 @@ res_fatal(PrvResponse *res, const char *fmt, ...)
+@@ -177,6 +177,7 @@ res_fatal(PrvResponse *res, const char *fmt, ...)
  
  /* HELPER - send response to the fd */
  
@@ -130,7 +133,7 @@ index 3bc76d14..2e8d704f 100644
  static int
  send_response(int fd, const PrvResponse *res)
  {
-@@ -193,6 +194,7 @@ receive_from_daemon(int fd, PrvRequest *req)
+@@ -213,6 +214,7 @@ receive_from_daemon(int fd, PrvRequest *req)
  
    return 1;
  }
@@ -138,7 +141,7 @@ index 3bc76d14..2e8d704f 100644
  
  /* ======================================================================= */
  
-@@ -202,9 +204,8 @@ receive_from_daemon(int fd, PrvRequest *req)
+@@ -222,9 +224,8 @@ receive_from_daemon(int fd, PrvRequest *req)
  static void
  do_adjust_time(const ReqAdjustTime *req, PrvResponse *res)
  {
@@ -150,7 +153,7 @@ index 3bc76d14..2e8d704f 100644
  }
  #endif
  
-@@ -217,9 +218,7 @@ static void
+@@ -237,9 +238,7 @@ static void
  do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
  {
    res->data.adjust_timex.tmx = req->tmx;
@@ -161,19 +164,19 @@ index 3bc76d14..2e8d704f 100644
  }
  #endif
  
-@@ -231,9 +230,8 @@ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
+@@ -251,9 +250,8 @@ do_adjust_timex(const ReqAdjustTimex *req, PrvResponse *res)
  static void
  do_set_time(const ReqSetTime *req, PrvResponse *res)
  {
--  res->rc = settimeofday(&req->tv, NULL);
+-  res->rc = clock_settime(CLOCK_REALTIME, &req->ts);
 -  if (res->rc)
 -    res->res_errno = errno;
-+  printf("%ld.%ld\n", req->tv.tv_sec, req->tv.tv_usec);
++  printf("%s\n", UTI_TimespecToString(&req->ts));
 +  res->rc = 0;
  }
  #endif
  
-@@ -257,17 +255,12 @@ do_bind_socket(ReqBindSocket *req, PrvResponse *res)
+@@ -277,17 +275,12 @@ do_bind_socket(ReqBindSocket *req, PrvResponse *res)
    SCK_SockaddrToIPSockAddr(sa, sa_len, &ip_saddr);
    if (ip_saddr.port != 0 && ip_saddr.port != CNF_GetNTPPort() &&
        ip_saddr.port != CNF_GetAcquisitionPort() && ip_saddr.port != CNF_GetPtpPort()) {
@@ -193,7 +196,7 @@ index 3bc76d14..2e8d704f 100644
  }
  #endif
  
-@@ -295,7 +288,6 @@ do_name_to_ipaddress(ReqName2IPAddress *req, PrvResponse *res)
+@@ -315,7 +308,6 @@ do_name_to_ipaddress(ReqName2IPAddress *req, PrvResponse *res)
  static void
  do_reload_dns(PrvResponse *res)
  {
@@ -201,7 +204,7 @@ index 3bc76d14..2e8d704f 100644
    res->rc = 0;
  }
  #endif
-@@ -305,19 +297,20 @@ do_reload_dns(PrvResponse *res)
+@@ -341,19 +333,20 @@ do_adjust_freq(const ReqAdjustFreq *req, PrvResponse *res)
  /* HELPER - main loop - action requests from the daemon */
  
  static void
@@ -225,7 +228,7 @@ index 3bc76d14..2e8d704f 100644
      switch (req.op) {
  #ifdef PRIVOPS_ADJUSTTIME
        case OP_ADJUSTTIME:
-@@ -358,15 +351,23 @@ helper_main(int fd)
+@@ -399,15 +392,23 @@ helper_main(int fd)
          break;
      }
  
@@ -251,7 +254,7 @@ index 3bc76d14..2e8d704f 100644
  /* DAEMON - receive helper response */
  
  static void
-@@ -638,6 +639,9 @@ PRV_Initialise(void)
+@@ -711,6 +712,9 @@ PRV_Initialise(int level)
  void
  PRV_StartHelper(void)
  {
@@ -261,7 +264,7 @@ index 3bc76d14..2e8d704f 100644
    pid_t pid;
    int fd, sock_fd1, sock_fd2;
  
-@@ -679,6 +683,7 @@ PRV_StartHelper(void)
+@@ -755,6 +759,7 @@ PRV_StartHelper(void)
      /* stop the helper even when not exiting cleanly from the main function */
      atexit(stop_helper);
    }
@@ -270,5 +273,5 @@ index 3bc76d14..2e8d704f 100644
  
  /* ======================================================================= */
 -- 
-2.50.1
+2.54.0
 

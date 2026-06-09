@@ -1,4 +1,4 @@
-From fcd9d64c1ab8aead8628f63497941bcc216eea5e Mon Sep 17 00:00:00 2001
+From 6a6308170c5f2225733284da5eec08c94354d285 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:54:03 +0200
 Subject: [PATCH 12/19] bypass signd
@@ -8,7 +8,7 @@ Subject: [PATCH 12/19] bypass signd
  1 file changed, 10 insertions(+)
 
 diff --git a/ntp_signd.c b/ntp_signd.c
-index e52c8f51..90efaf90 100644
+index ce0ffe5d..32b0c0b6 100644
 --- a/ntp_signd.c
 +++ b/ntp_signd.c
 @@ -134,7 +134,11 @@ open_socket(void)
@@ -23,12 +23,12 @@ index e52c8f51..90efaf90 100644
    if (sock_fd < 0) {
      sock_fd = INVALID_SOCK_FD;
  
-@@ -208,8 +212,14 @@ read_write_socket(int sock_fd, int event, void *anything)
+@@ -208,8 +212,14 @@ read_write_socket(int fd, int event, void *anything)
      if (!inst->sent)
        SCH_GetLastEventTime(NULL, NULL, &inst->request_ts);
  
 +#if 0
-     s = SCK_Send(sock_fd, (char *)&inst->request + inst->sent,
+     s = SCK_Send(fd, (char *)&inst->request + inst->sent,
                   inst->request_length - inst->sent, 0);
 +#else
 +    NIO_SendPacket((NTP_Packet *)((char *)&inst->request + inst->sent), &inst->remote_addr,
@@ -39,5 +39,5 @@ index e52c8f51..90efaf90 100644
      if (s < 0) {
        close_socket();
 -- 
-2.50.1
+2.54.0
 

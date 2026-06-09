@@ -1,4 +1,4 @@
-From 7953663aaf155b5999e8126acb35b655540d41db Mon Sep 17 00:00:00 2001
+From 3d03db984bf93657388306e1f2a42ea1e6b0395c Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:49:59 +0200
 Subject: [PATCH 07/19] search and open files only in specific directories
@@ -9,10 +9,10 @@ Subject: [PATCH 07/19] search and open files only in specific directories
  2 files changed, 19 insertions(+)
 
 diff --git a/conf.c b/conf.c
-index 1f362d7f..9c7b685b 100644
+index 233807b1..43ba7ae5 100644
 --- a/conf.c
 +++ b/conf.c
-@@ -1705,6 +1705,14 @@ compare_basenames(const void *a, const void *b)
+@@ -1716,6 +1716,14 @@ compare_basenames(const void *a, const void *b)
  
  /* ================================================== */
  
@@ -27,7 +27,7 @@ index 1f362d7f..9c7b685b 100644
  static int
  search_dirs(char *line, const char *suffix, void (*file_handler)(const char *path))
  {
-@@ -1720,6 +1728,8 @@ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *pat
+@@ -1731,6 +1739,8 @@ search_dirs(char *line, const char *suffix, void (*file_handler)(const char *pat
    for (i = 0; i < n_dirs; i++) {
      if (snprintf(buf, sizeof (buf), "%s/*%s", dirs[i], suffix) >= sizeof (buf))
        assert(0);
@@ -36,7 +36,7 @@ index 1f362d7f..9c7b685b 100644
      if (glob(buf, GLOB_NOSORT | (i > 0 ? GLOB_APPEND : 0), NULL, &gl) != 0)
        ;
    }
-@@ -1799,6 +1809,9 @@ parse_include(char *line)
+@@ -1810,6 +1820,9 @@ parse_include(char *line)
  
    check_number_of_args(line, 1);
  
@@ -47,10 +47,10 @@ index 1f362d7f..9c7b685b 100644
  #ifdef GLOB_NOMAGIC
                  GLOB_NOMAGIC |
 diff --git a/util.c b/util.c
-index 7e9cde3f..1beb65f5 100644
+index f0728074..e02bfdc2 100644
 --- a/util.c
 +++ b/util.c
-@@ -1378,6 +1378,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
+@@ -1380,6 +1380,12 @@ UTI_OpenFile(const char *basedir, const char *name, const char *suffix,
    if (!join_path(basedir, name, suffix, path, sizeof (path), severity))
      return NULL;
  
@@ -64,5 +64,5 @@ index 7e9cde3f..1beb65f5 100644
    if (env && strcmp(env, path) == 0) {
      DEBUG_LOG("Opened %s as stdin", path);
 -- 
-2.50.1
+2.54.0
 

@@ -1,4 +1,4 @@
-From a2d59825b4edc8dd2e7cb83bae7667936c0753e6 Mon Sep 17 00:00:00 2001
+From 0fde7c760e35b6edb7395ff8f55020b94f9db1e7 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Tue, 19 Apr 2022 13:34:51 +0200
 Subject: [PATCH 11/19] don't stop in chronyc on error
@@ -8,10 +8,10 @@ Subject: [PATCH 11/19] don't stop in chronyc on error
  1 file changed, 2 insertions(+)
 
 diff --git a/client.c b/client.c
-index 5af2b721..1e4ae3a1 100644
+index 1e3d1e9f..042473b8 100644
 --- a/client.c
 +++ b/client.c
-@@ -3544,6 +3544,7 @@ process_args(int argc, char **argv, int multi)
+@@ -3568,6 +3568,7 @@ process_args(int argc, char **argv, int multi)
        continue;
  
      ret = process_line(line);
@@ -19,7 +19,7 @@ index 5af2b721..1e4ae3a1 100644
      if (!ret || quit)
        break;
  
-@@ -3719,6 +3720,7 @@ main(int argc, char **argv)
+@@ -3747,6 +3748,7 @@ main(int argc, char **argv)
        line = read_line();
        if (line && !quit) {
          ret = process_line(line);
@@ -28,5 +28,5 @@ index 5af2b721..1e4ae3a1 100644
  	/* supply the final '\n' when user exits via ^D */
          if( on_terminal ) printf("\n");
 -- 
-2.50.1
+2.54.0
 

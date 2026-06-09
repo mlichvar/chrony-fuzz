@@ -1,4 +1,4 @@
-From 91ec45acc20b612735109a58b24576ba4425a5c2 Mon Sep 17 00:00:00 2001
+From b8ee33156c197521fe84f8ca4d8e54d2cd4809ce Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:50:36 +0200
 Subject: [PATCH 08/19] always return success with -t option
@@ -8,10 +8,10 @@ Subject: [PATCH 08/19] always return success with -t option
  1 file changed, 1 insertion(+)
 
 diff --git a/main.c b/main.c
-index 86a3228a..e239179c 100644
+index fb6dc5d9..69863343 100644
 --- a/main.c
 +++ b/main.c
-@@ -202,6 +202,7 @@ quit_timeout(void *arg)
+@@ -212,6 +212,7 @@ quit_timeout(void *arg)
  
    /* Return with non-zero status if the clock is not synchronised */
    exit_status = REF_GetOurStratum() >= NTP_MAX_STRATUM;
@@ -20,5 +20,5 @@ index 86a3228a..e239179c 100644
  }
  
 -- 
-2.50.1
+2.54.0
 

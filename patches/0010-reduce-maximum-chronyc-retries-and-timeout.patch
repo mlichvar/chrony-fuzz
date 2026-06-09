@@ -1,4 +1,4 @@
-From 585313600b4f81aa3214ef685435e3dee5d2e076 Mon Sep 17 00:00:00 2001
+From 1ce22f68b46065bd319a9a363f131ea1fcb43855 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Wed, 20 Apr 2022 16:51:30 +0200
 Subject: [PATCH 10/19] reduce maximum chronyc retries and timeout
@@ -8,10 +8,10 @@ Subject: [PATCH 10/19] reduce maximum chronyc retries and timeout
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/client.c b/client.c
-index 7fa68893..5af2b721 100644
+index c76cfe66..1e3d1e9f 100644
 --- a/client.c
 +++ b/client.c
-@@ -3166,6 +3166,9 @@ process_cmd_waitsync(char *line)
+@@ -3190,6 +3190,9 @@ process_cmd_waitsync(char *line)
    if (sscanf(line, "%d %lf %lf %lf", &max_tries, &max_correction, &max_skew_ppm, &interval))
      ;
  
@@ -21,7 +21,7 @@ index 7fa68893..5af2b721 100644
    /* Don't allow shorter interval than 0.1 seconds */
    if (interval < 0.1)
      interval = 0.1;
-@@ -3237,7 +3240,7 @@ process_cmd_timeout(const char *line)
+@@ -3261,7 +3264,7 @@ process_cmd_timeout(const char *line)
      LOG(LOGS_ERR, "Timeout %d is too short", timeout);
      return 0;
    }
@@ -30,7 +30,7 @@ index 7fa68893..5af2b721 100644
    return 1;
  }
  
-@@ -3249,7 +3252,7 @@ process_cmd_retries(const char *line)
+@@ -3273,7 +3276,7 @@ process_cmd_retries(const char *line)
    int retries;
  
    retries = atoi(line);
@@ -40,5 +40,5 @@ index 7fa68893..5af2b721 100644
      return 0;
    }
 -- 
-2.50.1
+2.54.0
 
