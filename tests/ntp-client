@@ -13,4 +13,6 @@ run_test chronyd -d -d -t 200 \
 	'allow' \
 	'keyfile data/chrony.keys' \
 	'makestep 10 2' \
+	'minstratum 2' \
+	'maxstratum 13' \
 	'server 192.168.123.2 iburst extfield F323 xleave maxdelayratio 10'
