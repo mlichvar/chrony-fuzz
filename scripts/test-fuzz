@@ -33,7 +33,10 @@ for cc in gcc-fast clang-lto; do
 		echo
 
 		TEST_MODE="" run_test "$WORK_DIR/chrony/chronyd" "--test-bug=$bug"
-		ls -l "$output/default/crashes/id"* > /dev/null || exit 1
+		if ! ls -l "$output/default/crashes/id"* > /dev/null; then
+			echo "no crashes for $cc bug=$bug"
+			exit 1
+		fi
 
 		TEST_MODE=single run_test "$WORK_DIR/chrony/chronyd" "--test-bug=$bug" < \
 			$(echo "$output/default/crashes/id"* | head -n1)
